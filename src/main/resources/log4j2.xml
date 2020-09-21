@@ -9,9 +9,9 @@
         see them in the mule_ee.log file. -->
 
     <Appenders>
-        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}cp-biz-common-sys-apis.log" 
-                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}cp-biz-common-sys-apis-%i.log">
-            <PatternLayout pattern="%-5p %d [%t] [event: %X{correlationId}] %c: %m%n" />
+        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}test_ci_cd.log" 
+                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}test_ci_cd-%i.log">
+            <PatternLayout pattern="%-5p %d [%t] [processor: %X{processorPath}; event: %X{correlationId}] %c: %m%n" />
             <SizeBasedTriggeringPolicy size="10 MB" />
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
@@ -19,10 +19,9 @@
     <Loggers>
         
         <!-- Http Logger shows wire traffic on DEBUG. -->
-        <!-- <AsyncLogger name="org.mule.service.http.impl.service.HttpMessageLogger" level="DEBUG" /> -->
+        <!--AsyncLogger name="org.mule.service.http.impl.service.HttpMessageLogger" level="DEBUG" /-->
         <AsyncLogger name="org.mule.service.http" level="WARN"/>
         <AsyncLogger name="org.mule.extension.http" level="WARN"/>
-        <AsyncLogger name="DEBUG" level="DEBUG"/>
     
 		<!-- Mule logger -->        
         <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="INFO"/>

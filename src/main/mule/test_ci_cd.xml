@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e1dd3950-46c9-4969-952e-589c707dd9d6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="05fe00b9-712d-4e28-8e92-4e2dc5811509" >
+		<email:smtp-connection host="smtp.gmail.com" user="sreekari.dronamraju@apisero.com" password="Sree@123" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<flow name="test_ci_cdFlow" doc:id="ac12e943-714b-4264-8314-0ed81597becb" >
+		<http:listener doc:name="Listener" doc:id="b8504d03-9f77-4302-858d-1875c13a29b3" config-ref="HTTP_Listener_config" path="/test"/>
+		<email:send doc:name="Send Email" doc:id="6d6f49c2-6c85-4581-b3a4-a60a6e3b956e" config-ref="Email_SMTP" fromAddress="sreekari.dronamraju@apisero.com" subject="CI/CD Test Email">
+			<email:to-addresses >
+				<email:to-address value="sreekari.dronamraju@apisero.com" />
+			</email:to-addresses>
+			<email:body >
+				<email:content ><![CDATA[This is a test email for CI/CD]]></email:content>
+			</email:body>
+		</email:send>
+		<ee:transform doc:name="Response" doc:id="23636fe2-a2df-4b93-b13f-e95032b40db0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"ci/cd jobs test"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

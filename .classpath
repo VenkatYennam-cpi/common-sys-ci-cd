@@ -1,25 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-http-connector/1.5.11"/>
-	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-sockets-connector/1.1.5"/>
-	<classpathentry kind="con" path="MULE_LIB/org.mule.modules/mule-apikit-module/1.3.7"/>
-	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-email-connector/1.1.9"/>
-	<classpathentry kind="con" path="MULE_LIB/com.mulesoft.modules/mule-secure-configuration-property-module/1.2.0"/>
-	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-ftp-connector/1.4.2"/>
-	<classpathentry kind="con" path="MULE_LIB/com.mulesoft.connectors/mule-cloudhub-connector/1.0.1"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/org.bouncycastle/bcpkix-jdk15on/1.60"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/com.google.code.gson/gson/2.8.5"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/commons-httpclient/commons-httpclient/3.1"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/org.apache.httpcomponents/httpcore/4.4.10"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/commons-logging/commons-logging/1.2"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/org.apache.httpcomponents/httpclient/4.5.6"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/org.bitbucket.b_c/jose4j/0.6.4"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/commons-codec/commons-codec/1.10"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/org.slf4j/slf4j-api/1.7.21"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/org.bouncycastle/bcprov-jdk15on/1.60"/>
-	<classpathentry kind="con" path="org.mule.tooling.MULE_PROJECT_LIB"/>
-	<classpathentry exported="true" kind="con" path="MULE_RUNTIME/org.mule.tooling.server.4.2.2.ee"/>
+	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-email-connector/1.2.1"/>
+	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-sockets-connector/1.1.6"/>
+	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-http-connector/1.5.17"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="MULE_RUNTIME/org.mule.tooling.server.4.3.0.ee"/>
 	<classpathentry kind="src" path="src/main/mule"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
