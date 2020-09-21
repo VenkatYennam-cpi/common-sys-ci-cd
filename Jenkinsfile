@@ -9,7 +9,7 @@ pipeline
 			}
 		}
 			
-		stage('Deploy Application To Cloudhub Environment'){
+		stage('Deploy Application To Cloudhub QA'){
 		environment {
         ANYPOINT_CREDENTIALS = credentials('cp-anypoint-creds')
       	}
@@ -17,10 +17,15 @@ pipeline
 			steps{
 				bat 'mvn package deploy -DmuleDeploy -Dusername=${ANYPOINT_CREDENTIALS_USR} -Dpassword=${ANYPOINT_CREDENTIALS_PSW} -Denvironment=US-QA  -DworkerType=Micro -Dworkers=1 -DapplicationName=common-sys-ci-cd-test'
 			}
-			steps{
+			
+		}
+		stage('Deploy Application To Cloudhub UAT'){
+		environment {
+        ANYPOINT_CREDENTIALS = credentials('cp-anypoint-creds')
+      	}
+		steps{
 				bat 'mvn package deploy -DmuleDeploy -Dusername=${ANYPOINT_CREDENTIALS_USR} -Dpassword=${ANYPOINT_CREDENTIALS_PSW} -Denvironment=UAT-US  -DworkerType=Micro -Dworkers=1 -DapplicationName=common-sys-ci-cd-test-uat'
 			}
-		}
 		
 	}
 }
