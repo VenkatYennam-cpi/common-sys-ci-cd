@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.mycompany</groupId>
-	<artifactId>test_ci_cd</artifactId>
+	<artifactId>test_ci_cd_pipeline</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>mule-application</packaging>
 
-	<name>test_ci_cd</name>
+	<name>test_ci_cd_pipeline</name>
 
     <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,17 +32,18 @@
 				<configuration>
 				<cloudHubDeployment>
                         <uri>https://anypoint.mulesoft.com</uri>
-                        <username>sree-TrailAcc8</username>
-                        <password>Sree@123</password>
-                        <applicationName>test-ci-cd</applicationName>
+                        <username>${username}</username>
+                        <password>${password}</password>
+                        <applicationName>test-ci-cd-pipeline</applicationName>
                         <workers>1</workers>
                         <workerType>MICRO</workerType>
-                        <environment>Sandbox</environment>
+                        <environment>${environment}</environment>
                         <muleVersion>4.3.0</muleVersion>
                         <objectStoreV2>true</objectStoreV2>
                     </cloudHubDeployment>
 				
-				</configuration>
+				<classifier>mule-application</classifier>
+                </configuration>
 				
 			</plugin>
 		</plugins>
