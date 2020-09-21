@@ -9,7 +9,7 @@ pipeline
 			}
 		}
 			
-		stage('Deploy Application To Cloudhub Environments'){
+		stage('Deploy Application To Cloudhub Environment'){
 		environment {
         ANYPOINT_CREDENTIALS = credentials('cp-anypoint-creds')
       	}
