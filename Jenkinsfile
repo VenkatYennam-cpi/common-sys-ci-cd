@@ -26,6 +26,6 @@ pipeline
 		steps{
 				bat 'mvn package deploy -DmuleDeploy -Dusername=${ANYPOINT_CREDENTIALS_USR} -Dpassword=${ANYPOINT_CREDENTIALS_PSW} -Denvironment=UAT-US  -DworkerType=Micro -Dworkers=1 -DapplicationName=common-sys-ci-cd-test-uat'
 			}
-		
+		}
 	}
 }
