@@ -1,8 +1,0 @@
-{
-  "source_folder_name": "sample_folder1",
-  "source_file_name": "sample_file1.csv",
-  "source_version_id": "1.0",
-  "destination_folder_name": "sample_folder2",
-  "destination_file_name": "sample_file2.csv",
-  "account_id":"bizapps"
-}

@@ -1,9 +1,0 @@
-{
-  "errors": [
-    {
-      "transactionId": "ewrwrwrwerwe111",
-      "errorCode": "DATA_NOT_FOUND",
-      "errorMessage": "Data not found"
-    }
-  ]
-}

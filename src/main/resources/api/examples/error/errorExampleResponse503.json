@@ -1,8 +1,0 @@
-{
-    "errors":[
-    {
-        "transaction_id": "283745238495610935",
-        "error_code": "APIKIT-503-SERVICE-UNAVAILABLE-ERROR",
-        "error_message": "The server is currently unable to handle the request due to a temporary overloading or maintenance of the server"
-    }]
-}

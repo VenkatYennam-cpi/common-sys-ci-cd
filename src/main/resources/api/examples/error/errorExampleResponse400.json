@@ -1,8 +1,0 @@
-{
-    "errors":[
-    {
-        "transaction_id": "1029351350435943",
-        "error_code": "APIKIT-400-DATA-ERROR",
-        "error_message": "Encountered a Data error while processing a lead request"
-    }]
-}

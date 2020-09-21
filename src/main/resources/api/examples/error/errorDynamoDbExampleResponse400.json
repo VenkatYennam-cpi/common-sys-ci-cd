@@ -1,9 +1,0 @@
-{
-  "errors": [
-    {
-      "transactionId": "961f3710-ec48-11ea-9c91-a0510b48d65f",
-      "errorCode": "HTTP - 400",
-      "errorMessage": "Requested resource not found (Service: AmazonDynamoDBv2; Status Code: 400; Error Code: ResourceNotFoundException; Request ID: 0OB1R3HG5DSQMFAK0FRPHL5TR3VV4KQNSO5AEMVJF66Q9ASUAAJG)"
-    }
-  ]
-}

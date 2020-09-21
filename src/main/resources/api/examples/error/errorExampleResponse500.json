@@ -1,8 +1,0 @@
-{
-    "errors":[
-    {
-        "transaction_id": "32097423545",
-        "error_code": "APIKIT-501-NOT-IMPLEMENTED-ERROR",
-        "error_message": "Encountered an error while processing a lead request. Not implemented error"
-    }]
-}

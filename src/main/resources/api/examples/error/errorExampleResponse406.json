@@ -1,8 +1,0 @@
-{
-    "errors":[
-    {
-        "transaction_id": "1237591235701345",
-        "error_code": "APIKIT-406-NOT-ACCEPTABLE-ERROR",
-        "error_message": "Encountered an error while processing a lead request. Not acceptable error"
-    }]
-}

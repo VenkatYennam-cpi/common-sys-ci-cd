@@ -1,8 +1,0 @@
-{
-    "errors":[
-    {
-        "transaction_id": "123712035151395",
-        "error_code": "APIKIT-415-UNSUPPORTED-MEDIATYPE-ERROR",
-        "error_message": "Encountered an error while processing a lead request. Unsupported media type"
-    }]
-}
