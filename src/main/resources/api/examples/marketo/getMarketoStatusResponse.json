@@ -1,0 +1,15 @@
+{
+  "request_id": "1f63#15d6738fd15",
+  "result": [
+    {
+      "batch_id": 3404,
+      "import_id": "3404",
+      "status": "Complete",
+      "num_of_leads_processed": 3,
+      "num_of_rows_failed": 0,
+      "num_of_rows_with_warning": 0,
+      "message": "Import succeeded, 3 records imported (3 members)"
+    }
+  ],
+  "success": true
+}

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
+	xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd 
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd">
+	<flow name="mf-search" doc:id="c441e215-2f15-4e4b-b3af-4ee11a3af575" >
+		<logger level="INFO" doc:name="mf-search Flow Started" doc:id="d5ddb7a2-d59f-4e55-bb8d-48942410dcf9" message="mf-search Flow Started"/>
+		<logger level="DEBUG" doc:name="LOG Search Info" doc:id="926d2230-1acd-46a0-8689-895b2a0f0195" message="Serach Folder = #[attributes.queryParams.query]"/>
+		<flow-ref doc:name="Refer get-access-token" doc:id="20b152e3-c8b4-4bda-be55-77d560efb221" name="sf-get-access-token" />
+		<http:request method="GET" doc:name="Search Folder Request" doc:id="2a0b5854-0c12-4d18-b018-307d20c80791" config-ref="HTTP_Request_configuration_Box" path="/search">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.boxAccessToken
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"type" : "folder",
+	"query" : attributes.queryParams.query
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="DW Set Response" doc:id="140e5b66-05f3-4085-b484-c270e77b20c9" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/setResponse.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-search Flow Ended" doc:id="b73d5ca2-2ce8-47d2-b58a-c76550556640" message="mf-search Flow Ended"/>
+	</flow>
+	<sub-flow name="sf-get-access-token" doc:id="005b1e7f-cd57-4ce9-baf8-6c67da90252f" >
+		<ee:transform doc:name="DW Set access token" doc:id="44bf05c1-ac92-45eb-b776-6b095df1f1ad">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/vBoxAccessToken.dwl" variableName="boxAccessToken" />
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	<flow name="mf-retrieve-folder-items" doc:id="d3d3109c-8761-48dc-b9a0-3dc927ed4f1a" >
+		<logger level="INFO" doc:name="mf-retrieve-folder-items Flow Started" doc:id="3e12d456-6e9a-4cf0-b966-ea18cb8f13d2" message="mf-retrieve-folder-items Flow Started"/>
+		<logger level="DEBUG" doc:name="LOG Parent Folder ID" doc:id="2fa940ed-650e-4523-a8e7-51ffe91da5e5" message="Retrieving Item Details from Folder ID = #[attributes.uriParams.file_id]"/>
+		<flow-ref doc:name="Refer get-access-token" doc:id="c2adcf9a-a734-4af0-a908-166ef13e2440" name="sf-get-access-token" />
+		<http:request method="GET" doc:name="Retrieve Folder Items Request" doc:id="4828e718-fc5c-44f2-aaf4-209828de2bb1" path="/folders/{folder_id}/items" config-ref="HTTP_Request_configuration_Box">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.boxAccessToken
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"folder_id" : attributes.uriParams.folder_id}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="mf-retrieve-folder-items Flow Ended" doc:id="60479586-930a-4610-bae4-a37c18e92f31" message="mf-retrieve-folder-items Flow Ended"/>
+
+	</flow>
+	
+	<flow name="mf-create-folders" doc:id="9aa7f0a5-b8f5-4161-ae1d-4bba90dbf4fc" >
+		<logger level="INFO" doc:name="mf-create-folders Flow Started" doc:id="10679fbc-5ad7-4df7-a3cc-14cafa77ddf0" message="mf-create-folders Flow Started"/>
+		<logger level="DEBUG" doc:name="LOG Parent Folder" doc:id="d90a6120-d5c8-467a-9099-dc1043d89f70" message='Create Folder with Folder Name = #[%dw 2.0 output application/json ---payload.name] Parent Folder ID = #[%dw 2.0 output application/json ---payload.parent.id] '/>
+		<ee:transform doc:name="DW set Incoming Request" doc:id="2c80c41c-3170-4e64-b731-7318ef46039e" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/setCreateFolderRequest.dwl" />
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Refer get-access-token" doc:id="efd55b9f-ec4d-45e9-9f9f-334fe27ffacb" name="sf-get-access-token" />
+		<http:request method="POST" doc:name="Create Folder Request" doc:id="6c6a2aad-27f6-49d1-a764-0053f6992d3d" config-ref="HTTP_Request_configuration_Box" path="/folders">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.boxAccessToken
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="DW Set Response" doc:id="67e82b35-ea79-4e57-b376-fb72f13c353c" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/setResponse.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-create-folders Flow Ended" doc:id="b5a771b2-eaa3-4951-a47b-fda25fb1ee7f" message="mf-create-folders Flow Ended"/>
+	</flow>
+	<flow name="mf-delete-file" doc:id="47f3613a-544e-49af-9399-f7b55be42e3e" >
+		<logger level="INFO" doc:name="mf-delete-file Flow Started" doc:id="8e4ceba9-d42d-4a7d-94b0-75eeb6d90460" message="mf-delete-file Flow Started"/>
+		<logger level="DEBUG" doc:name="LOG Delete Info" doc:id="eaec3304-8d5f-4e48-8a12-4a94f6c9a5e7" message="Delete File with File ID = #[attributes.uriParams.file_id]"/>
+		<flow-ref doc:name="Refer get-access-token" doc:id="db945959-13c8-4166-a5fd-811fe77ad6f1" name="sf-get-access-token" />
+		<http:request method="DELETE" doc:name="Delete File Request" doc:id="19a0d37d-f1fc-470b-bd02-a5f38d394aec" path="/files/{files_id}" config-ref="HTTP_Request_configuration_Box">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.boxAccessToken
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"files_id" : attributes.uriParams.file_id}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="mf-delete-file Flow Ended" doc:id="56a4b7ce-8a4c-4537-a6a1-9b100e1f1862" message="mf-delete-file Flow Ended"/>
+	</flow>
+	<flow name="mf-upload-file" doc:id="1560e749-cee8-4d05-be57-e3c3521717df" >
+		<logger level="INFO" doc:name="mf-upload-file Flow Started" doc:id="d968c514-5706-47e1-befa-4e3820f76476" message="mf-upload-file Flow Started"/>
+		<logger level="DEBUG" doc:name="LOG Upload File" doc:id="26b312f3-cff0-4c10-ada7-887a3e57700e" message="Upload File to Folder WIth ID = #[attributes.headers.folder_id default (attributes.headers.jobFolderId)]"/>
+		<ee:transform doc:name="DW set upload file request" doc:id="ec0cf859-df06-49ed-98c1-70b09e349dcb">
+			<ee:message>
+				<ee:set-payload resource="dwScripts/uploadFileRequest.dwl" />
+			</ee:message>
+			<ee:variables>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Refer get-access-token" doc:id="925f71cb-0877-4792-8d2b-3d472cc8bef8" name="sf-get-access-token" />
+		<http:request method="POST" doc:name="Upload File Request" doc:id="0283bad7-8773-469a-81ad-d1b927e70bd3" config-ref="HTTP_Request_configuration_Box_Upload" path="/files/content">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.boxAccessToken
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="DW Upload File Response" doc:id="878f8397-e509-48dd-8047-25c4226945f3">
+			<ee:message>
+				<ee:set-payload resource="dwScripts/uploadFileResponse.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-upload-file Flow Ended" doc:id="3daf3cd8-452b-42f7-8c7d-9bfb3d7192b2" message="mf-upload-file Flow Ended"/>
+	</flow>
+	<flow name="mf-retrieve-file" doc:id="3337afb9-8634-4860-9923-8a5ca4e5ecba" >
+		<logger level="INFO" doc:name="mf-retrieve-file Flow Started" doc:id="79ed3315-a3f7-4cd4-b2ae-fb0904a5387e" message="mf-retrieve-file Flow Started"/>
+		<logger level="DEBUG" doc:name="LOG Retrieve File Content" doc:id="eedba793-41f0-4cc3-b9d1-187400383c5e" message="Retrieve File Content With File Id = #[attributes.uriParams.file_id]"/>
+		<flow-ref doc:name="Refer get-access-token" doc:id="5f3c81c5-3917-4c53-b76d-027266840e46" name="sf-get-access-token" />
+		<http:request method="GET" doc:name="Retrive File Request" doc:id="168ad39d-df73-41a1-8aaa-65d3a1c98551" config-ref="HTTP_Request_configuration_Box" path="/files/{file_id}/content" outputMimeType="application/java">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.boxAccessToken
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"file_id" : attributes.uriParams.file_id
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="DW Retrieve File Response" doc:id="dc19fdf0-b56e-49a7-8292-1f4b0a793d08" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/retrieveFileResponse.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-retrieve-file Flow Ended" doc:id="a66a4e54-d0c1-4048-b3dc-d9d315926ff8" message="mf-retrieve-file Flow Ended"/>
+	</flow>
+	<flow name="mf-retrieve-file-info" doc:id="6550754f-b7dc-4058-a117-08dadbca2fd9" >
+		<logger level="INFO" doc:name="mf-retrieve-file-info Flow Started" doc:id="7c439669-42b0-41c3-bffd-4d9d9daf8fb6" message="mf-retrieve-file-info Flow Started"/>
+		<logger level="DEBUG" doc:name="LOG Retrieve File Info" doc:id="9961d4e4-0dd8-41b7-871f-83b0f9d63161" message="Retrieve File Information With File Id = #[attributes.uriParams.file_id]"/>
+		<flow-ref doc:name="Refer get-access-token" doc:id="18722a67-eee0-45c9-bfef-5aaa67798ba1" name="sf-get-access-token" />
+		<http:request method="GET" doc:name="Retrieve File Info Request" doc:id="c2e584b0-c150-4f9c-85b0-3e3b7fd51da3" config-ref="HTTP_Request_configuration_Box" path="/files/{file_id}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.boxAccessToken
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"file_id" : attributes.uriParams.file_id
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="mf-retrieve-file-info Flow Ended" doc:id="00b3b0e3-922d-4d51-b63e-b2a8f6241ac7" message="mf-retrieve-file-info Flow Ended"/>
+	</flow>
+	<flow name="mf-upload-file-version" doc:id="b55dea2a-efda-4c84-ba7e-5d17f71e0613" >
+		<logger level="INFO" doc:name="mf-upload-file-version Flow Started" doc:id="8c4fdb53-67f7-4f48-9b16-1994e1d160ab" message="mf-upload-file-version Flow Started"/>
+		<logger level="DEBUG" doc:name="LOG Upload File Version" doc:id="aa6572c6-bac1-4356-ba07-be5f53d70ce3" message="Update File to Folder WIth ID = #[attributes.headers.folder_id default (attributes.headers.jobFolderId)]"/>
+		<ee:transform doc:name="DW SET Incoming Request" doc:id="4f73d46d-78a2-4214-b20b-77cc41581dfc" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/uploadFileVersionRequest.dwl" />
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Refer get-access-token" doc:id="e8ccee1b-05ad-4b14-80af-9b620c787850" name="sf-get-access-token" />
+		<http:request method="POST" doc:name="Upload File Version Request" doc:id="be7bd4ca-a1ec-4508-b550-85baf8a4a24c" config-ref="HTTP_Request_configuration_Box_Upload" path="/files/{files_id}/content">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.boxAccessToken,
+	"If-Match" : attributes.headers.etag
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	files_id : attributes.uriParams.file_id
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="DW Upload File Version Rsponse" doc:id="97600a61-3214-44a6-b5ea-7bee3014d224" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/uploadFileVersionResponse.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-upload-file-version Flow Ended" doc:id="6d53ce11-0a77-4393-aa9b-8e22ac3f3538" message="mf-upload-file-version Flow Ended"/>
+	</flow>
+	<flow name="mf-email-notification-flow" doc:id="f7b997e5-56c0-4787-84bb-a427268efb29" >
+		<logger level="INFO" doc:name="mf-email-notification-flow Started" doc:id="2e0faceb-b624-442b-b318-910dddd79aa9" message="mf-email-notification-flow Started"/>
+		<ee:transform doc:name="Transforming Attachments and Email Variable" doc:id="03b54317-dbd3-48b5-bdb8-3f4e14e0b5f1" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwScripts\email-Request-Payload.dwl" variableName="email" />
+				<ee:set-variable resource="dwScripts\attachments.dwl" variableName="attachments" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-parse-template-flow Ended" doc:id="404cff69-8854-4ba4-bd54-f00dd489b76b" name="sf-parse-template-flow"/>
+		<flow-ref doc:name="sf-email-notification-flow" doc:id="8b20c797-9259-478d-ac28-c2d1bd56c26a" name="sf-email-notification-flow"/>
+		<ee:transform doc:name="Success Response" doc:id="61983a4a-c999-40a2-aba2-e423d794e517" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Success"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-email-notification-flow Ended" doc:id="7ecead8f-4d27-460c-b3fe-ad33a8c14fd0" message="mf-email-notification-flow Ended"/>
+	</flow>
+	<sub-flow name="sf-email-notification-flow" doc:id="20bf0163-5812-494c-9542-a765ec3dbcff" >
+		<logger level="INFO" doc:name="sf-email-notification-flow Started" doc:id="ba8896fe-1c12-4bac-9f42-87c02915c0e0" message="sf-email-notification-flow Started" />
+		<email:send doc:name="Send Email Notification" doc:id="18537fe5-0dcb-4a03-becc-631845dd0102" config-ref="Email_SMTP" fromAddress="${smtp.email}" subject="#[vars.email.subject]" toAddresses='#[vars.email.to_addresses splitBy (",")]'>
+			<email:body contentType="text/html" />
+			<email:attachments><![CDATA[#[if(vars.attachments != null){((vars.attachments)..filename map ((item, index) ->
+(item): (lookup(("pf-" ++ (((item) splitBy ".")[1] default "txt") ++ "-flow"),(vars.attachments)..content[index],2000000)
+) default null))} else {}]]]></email:attachments>
+		</email:send>
+		<logger level="INFO" doc:name="sf-email-notification-flow Ended" doc:id="cb205697-efae-4f74-bb53-0cc4eed2ecc8" message="sf-email-notification-flow Ended" />
+	</sub-flow>
+	<sub-flow name="sf-parse-template-flow" doc:id="4460b5cb-4b8c-4bcd-b91a-b43104ee0618" >
+		<logger level="INFO" doc:name="sf-parse-template-flow Started" doc:id="f261fe47-89c4-4649-bbac-94efaf70919c" message="sf-parse-template-flow Started"/>
+		<parse-template doc:name="Parsing Incoming Template" doc:id="a77eb699-5e92-4dae-8b8c-e5f056dba5e2">
+			<content>#[vars.email.body.template]</content>
+		</parse-template>
+		<set-payload value="#[output application/java --- (payload replace /[\\&quot;\n&quot;\r&quot;\t]/ with '')]" doc:name="Payload after parsing" doc:id="c4f132ab-d971-40cb-a4ff-1a6b0961a3e1" />
+		<logger level="INFO" doc:name="sf-parse-template-flow Ended" doc:id="842cc328-6508-4830-856b-67e6a96de0ab" message="sf-parse-template-flow Ended"/>
+	</sub-flow>
+	<flow name="pf-csv-flow" doc:id="752f179d-8e7a-4b54-9c2b-dd62bea3dee3">
+		<logger level="INFO" doc:name="Payload to CSV Flow Started" doc:id="ebfc6313-d6d4-4771-bf4a-fd479e0163c5" message="pf-csv-flow Started" />
+		<ee:transform doc:name="Convert Payload To CSV" doc:id="11aa13d3-4767-4761-872c-23786db38d43">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/csv header=true, separator=",", quoteValues=true
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Payload to CSV Flow Ended" doc:id="7aed59ee-65c7-4e20-b55a-6e7a559e3aba" message="pf-csv-flow Ended" />
+	</flow>
+	<flow name="pf-txt-flow" doc:id="6eef0965-4f2c-4784-a8d0-5e3760e76e3f">
+		<logger level="INFO" doc:name="Payload to TXT Flow Started" doc:id="efb21b55-49af-4f85-9803-dbb4722a9f52" message="pf-txt-flow Started" />
+		<ee:transform doc:name="Convert Payload To Text Plain" doc:id="3d42d1e3-10c6-4a7b-ab39-e7fff5b79cad">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Payload to TXT Flow Ended" doc:id="542a32aa-9b75-485b-914f-71ea8f27cc80" message="pf-txt-flow Ended" />
+	</flow>
+	<flow name="mf-ftp-read" doc:id="7df77bfa-b67f-43a0-8472-bac728a9f809">
+		<logger level="INFO" doc:name="FTP Read Flow Started" doc:id="448f6b71-4a17-4f83-99b1-90e575f32d65" message="pf-ftp-read Flow Started"/>
+		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="8a36d466-3f64-4a0e-ba5d-a8546711def4" millisBetweenRetries="30000">
+			<ftp:read doc:name="Read" doc:id="8985f713-e774-477e-87a6-c580ad105949" config-ref="FTP_Config" path="#[payload.sourcePath]" />
+		</until-successful>
+		<logger level="INFO" doc:name="FTP Read Flow Ended" doc:id="a0b57adf-1e24-4da9-91ad-206c62d4adf6" message="pf-ftp-read Flow Ended"/>
+	</flow>
+	<flow name="mf-ftp-list" doc:id="24f927e3-9f7a-4cd0-9791-b25e63054f93" >
+		<logger level="INFO" doc:name="FTP List Flow Started" doc:id="d5b4e3b8-4c2b-42e2-a2e4-23427d7f9f03" message="pf-ftp-list Flow Started"/>
+		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="9580c3db-cf3e-49ab-9621-55ff6f7111a5" millisBetweenRetries="30000">
+			<ftp:list doc:name="List" doc:id="57b22887-3784-4084-ad2e-087efd5f967b" config-ref="FTP_Config" directoryPath="#[payload.sourcePath]" />
+		</until-successful>
+		<ee:transform doc:name="Payload to JSON" doc:id="ed2b3f52-7359-435d-ab6a-d5e198f416ad" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="FTP List Flow Ended" doc:id="92cb1fe3-bbef-413d-8edf-5d1aba77264e" message="pf-ftp-list Flow Ended"/>
+	</flow>
+	<flow name="mf-ftp-move" doc:id="49a5b88f-92fa-4ba3-9b6c-28ca8203e1ee" >
+		<logger level="INFO" doc:name="FTP Write Flow Started" doc:id="2a277a6e-3e6f-483a-ad5c-a5a1ed86132f" message="pf-ftp-write Flow Started" />
+		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="74bb4731-6dd0-4a68-bac3-e268fbe60cd6" millisBetweenRetries="30000">
+			<ftp:move doc:name="Move" doc:id="f6bcfbf8-a117-4ce4-94d5-9817f0283931" config-ref="FTP_Config" targetPath="#[payload.targetPath]" sourcePath="#[payload.sourcePath]" />
+		</until-successful>
+		<logger level="INFO" doc:name="FTP Write Flow Ended" doc:id="0619f96c-8104-4dad-96de-914f7c42efe0" message="pf-ftp-move Flow Ended" />
+	</flow>
+	
+	
+	
+	
+	
+</mule>

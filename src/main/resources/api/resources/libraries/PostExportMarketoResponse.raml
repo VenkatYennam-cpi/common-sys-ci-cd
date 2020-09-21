@@ -1,0 +1,38 @@
+#%RAML 1.0 Library
+
+
+types:           
+  export_marketo_response: 
+      type: object
+      description: Export Marketo response schema
+      properties:
+       request_id:
+        type: string
+        required: false
+        description: Request Id
+       result:
+        type: array
+        description: Result of the request
+        items:
+         properties: 
+           
+           export_id:
+            type: string
+            required: false
+            description: Export Id
+           status:
+            type: string
+            required: false
+            description: status of the batch
+           format:
+            type: string
+            required: false
+            description: Format of the file
+           created_at:
+            type: string
+            required: false
+            description: Created Date and Time
+       success:
+          type: boolean
+          required: false
+          description: Whether the request succeeded

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+
+	<sub-flow name="cf-ospc-web-consumer-service" doc:id="4e842547-48a0-4012-9d0a-b28223c53041">
+	    <wsc:consume operation="${ospc.wsc.operation}" doc:name="OSPC_Consumer_Config_Service" doc:id="604eda62-0bc4-41a6-b072-b8afdfbdf450" config-ref="OSPC_Consumer_Config_Service" />
+	</sub-flow>
+	
+</mule>

@@ -1,0 +1,1168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="cp-biz-common-sys-apis-test-suite.xml" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="a88f2d1b-ec7a-4aa0-8c06-092a11770a61" >
+		<http:request-connection host="0.0.0.0" port="8081" />
+	</http:request-config>
+	<munit:test name="post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config-200-application\json-FlowTest" description="Verifying functionality of [post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config-200-application\json]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="cp-biz-common-sys-apis-main" />
+            <munit:enable-flow-source value="post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_v1_aws_dynamo-db_scan_application_json.json')]" />
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7b22770f-de2d-47b9-bbc6-8243d749fa91" processor="dynamodb:scan">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="38d4ec1d-d16c-4256-9cbe-e1d86a4704c2" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Amazon_DynamoDB_Configuration" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('scaffolder/response/post_200_v1_aws_dynamo-db_scan_application_json.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+        
+</munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_configuration" method="POST" path="/api/v1/aws/dynamo-db/scan">
+                <http:headers><![CDATA[#[{"Accept":"application/json","Content-Type":"application/json"}]]]></http:headers>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 200" />
+            <munit-tools:assert-that expression="#[not isEmpty(payload)]" is="#[MunitTools::equalTo(true)]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config-400-application\json-FlowTest" description="Verifying functionality of [post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config-200-application\json]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="cp-biz-common-sys-apis-main" />
+            <munit:enable-flow-source value="post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_v1_aws_dynamo-db_scan_application_json_400.json')]" />
+        
+</munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_configuration" method="POST" path="/api/v1/aws/dynamo-db/scan">
+                <http:headers><![CDATA[#[{"Accept":"application/json","Content-Type":"application/json"}]]]></http:headers>
+				<http:response-validator >
+					<http:success-status-code-validator values="#[400]" />
+				</http:response-validator>
+            
+</http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 400" />
+            <munit-tools:assert-that expression="#[not isEmpty(payload.errors[0].errorCode)]" is="#[MunitTools::equalTo(true)]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config-500-application\json-FlowTest" description="Verifying functionality of [post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config-200-application\json]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="cp-biz-common-sys-apis-main" />
+            <munit:enable-flow-source value="post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_v1_aws_dynamo-db_scan_application_json.json')]" />
+        
+</munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_configuration" method="POST" path="/api/v1/aws/dynamo-db/scan">
+                <http:headers><![CDATA[#[{"Accept":"application/json","Content-Type":"application/json"}]]]></http:headers>
+				<http:response-validator >
+					<http:success-status-code-validator values="#[500]" />
+				</http:response-validator>
+            
+</http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(500)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 500" />
+			<munit-tools:assert-that expression="#[not isEmpty(payload.errors[0].errorCode)]" is="#[MunitTools::equalTo(true)]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+	<munit:test name="post:\v1\aws\dynamo-db\items:application\json:cp-biz-common-sys-apis-config-test" doc:id="726e4bda-83d8-49fe-b744-2577e0fcd1f5">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock DynamoDb Batch Put Item" doc:id="7fef6c36-3d87-4874-9940-2e514b61a0f0" processor="dynamodb:batch-put-item">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="33cd4c19-f823-463a-9ef1-d43422d169c5" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="819f27f3-4b7d-49f8-8085-16b344435493">
+					<munit:payload value="#[output application/json --- readUrl('classpath://putv1awsdynamodbbatchputitemapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:attributes value="#[readUrl('classpath://putv1awsdynamodbbatchputitemapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+					<munit:variables>
+						<munit:variable key="outboundHeaders" value="#[readUrl('classpath://putv1awsdynamodbbatchputitemapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					</munit:variables>
+				</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="post:\v1\aws\dynamo-db\items:application\json:cp-biz-common-sys-apis-config" doc:id="ca3a00f4-d62a-4eb1-b47f-563e74769f59" name="post:\v1\aws\dynamo-db\items:application\json:cp-biz-common-sys-apis-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="1e9ccdb2-a4c8-4a80-8e8a-aab7a59d568f" message="The payload does not match">
+					<munit-tools:that><![CDATA[#[%dw 2.0
+import putv1awsdynamodbbatchputitemapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+				</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\aws\upload:application\json:cp-biz-common-sys-apis-config-test" doc:id="97eff9fd-72b1-474c-8a8b-0c63a0343c3a">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock AWS S3 Create Object" doc:id="55ae5913-1ca4-4496-b10b-97c35f145748" processor="s3:create-object">
+					<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="6ccdea56-bb83-4fce-a654-14a4e32eb2a2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+						<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1awsuploadapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variables>
+							<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postv1awsuploadapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+							<munit-tools:variable key="configVarAws" value="#[output application/json --- readUrl('classpath://postv1awsuploadapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						</munit-tools:variables>
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="6e25c232-8689-4310-beb0-6b8f0f60829b">
+					<munit:payload value="#[output application/json --- readUrl('classpath://postv1awsuploadapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:attributes value="#[readUrl('classpath://postv1awsuploadapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+					<munit:variables>
+						<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1awsuploadapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					</munit:variables>
+				</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\aws\upload:application\json:cp-biz-common-sys-apis-config" doc:id="7e9d42a7-eb34-4d74-89d5-5dd532b10951" name="post:\v1\aws\upload:application\json:cp-biz-common-sys-apis-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="17eb5396-1548-4750-bb98-cdfb07aa624e" message="The payload does not match">
+					<munit-tools:that><![CDATA[#[%dw 2.0
+import postv1awsuploadapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+				</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\aws\read:application\json:cp-biz-common-sys-apis-config-test" doc:id="edc872c0-7a6f-43fd-aaf7-207631a249de">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock AWS S3 Get Object" doc:id="d0f48eb0-1074-490d-b579-cc5b93443fe8" processor="s3:get-object">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="480859af-ada1-47ca-85db-bd75c90baf32" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1awsreadapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://postv1awsreadapplicationjsoncpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postv1awsreadapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="configVarAws" value="#[output application/json --- readUrl('classpath://postv1awsreadapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="45b54e16-d2b4-42d4-bc53-78c9f5b78cf0" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postv1awsreadapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postv1awsreadapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1awsreadapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\aws\read:application\json:cp-biz-common-sys-apis-config" doc:id="8f4f38e4-bb7d-4ffb-bcde-29cfe64f6445" name="post:\v1\aws\read:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="fc7cf769-39e8-4b15-81ba-db2fcfc160ae" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1awsreadapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\aws\list:application\json:cp-biz-common-sys-apis-config-test" doc:id="214e54dc-1117-4b53-b6db-eea4e43e3d35">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock AWS S3 List Objects" doc:id="3ce79bcb-e8c5-466b-be7c-d0d2f20ece78" processor="s3:list-objects">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="24f52566-872c-4012-b708-9d1d485a2abd" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1awslistapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postv1awslistapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="configVarAws" value="#[output application/json --- readUrl('classpath://postv1awslistapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="d9deb864-2113-40ba-95fc-476d237140cc" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postv1awslistapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postv1awslistapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1awslistapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\aws\list:application\json:cp-biz-common-sys-apis-config" doc:id="7030a0ed-fe3a-4886-8093-90fc089c2d14" name="post:\v1\aws\list:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="9453dd79-e742-4412-8fb8-86d529ff67b4" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1awslistapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\aws\copy:application\json:cp-biz-common-sys-apis-config-test" doc:id="4a0ab4dd-d933-49b2-bef3-39f21f404155">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock AWS S3 Copy Object" doc:id="d3b7ee5f-cb9f-4007-8bb1-7af18a1b8723" processor="s3:copy-object">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="fb7638cc-4417-4972-a30e-c9309a10865b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1awscopyapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postv1awscopyapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="configVarAws" value="#[output application/json --- readUrl('classpath://postv1awscopyapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="723dadc3-a7fc-4b16-80fd-844f3e925821" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postv1awscopyapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postv1awscopyapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1awscopyapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\aws\copy:application\json:cp-biz-common-sys-apis-config" doc:id="e97173b4-8837-4cc2-976f-2af3e4aa1924" name="post:\v1\aws\copy:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="5d4a8951-f1a4-4747-912f-f10d3e6268fb" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1awscopyapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="delete:\v1\aws\delete:application\json:cp-biz-common-sys-apis-config-test" doc:id="4879e2f8-bc1f-4710-9caa-f5d230c626e7">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock AWS S3 Delete Object" doc:id="63dbc72d-e1fa-4603-9e16-2dc1c7fd9418" processor="s3:delete-object">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0f7fc014-31c5-45a1-920d-05127625df50" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://deletev1awsdeleteapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://deletev1awsdeleteapplicationjsoncpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://deletev1awsdeleteapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="configVarAws" value="#[output application/json --- readUrl('classpath://deletev1awsdeleteapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="63644311-83bf-4f34-a38d-a3286d39ed4b" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://deletev1awsdeleteapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://deletev1awsdeleteapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://deletev1awsdeleteapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to delete:\v1\aws\delete:application\json:cp-biz-common-sys-apis-config" doc:id="bde4c266-ff99-49f8-991e-144e720b238d" name="delete:\v1\aws\delete:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="0c3f7f02-c1b8-4e9f-9adf-54df98f4d54b" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import deletev1awsdeleteapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\box\search:cp-biz-common-sys-apis-config-test" doc:id="4fb70790-03f8-4bb5-99b4-f484f59acdf3">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock File Search Request" doc:id="19111f94-861d-4d87-b5ef-85820b32c0c9" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="2a0b5854-0c12-4d18-b018-307d20c80791" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getboxsearchcpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://getboxsearchcpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getboxsearchcpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="cd55250c-53c5-4acc-9890-b746e2288106" >
+				<munit:payload value="#[readUrl('classpath://getboxsearchcpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getboxsearchcpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getboxsearchcpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\box\search:cp-biz-common-sys-apis-config" doc:id="6d75224a-cab2-4935-84b3-1c4a3dfed729" name="get:\box\search:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="79dd7383-b1f8-49fb-a51f-1973535ba25e" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getboxsearchcpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\box\create-folder:application\json:cp-biz-common-sys-apis-config-test" doc:id="9e6f1c28-4676-43ce-8ff8-430bf7c25d29">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Create Folder Request" doc:id="a7ff0d4e-9929-4857-82ec-3f3641b56595" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="6c6a2aad-27f6-49d1-a764-0053f6992d3d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postboxcreatefolderapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://postboxcreatefolderapplicationjsoncpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postboxcreatefolderapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="61ea867f-2365-4d88-8f17-07cd8806dc73" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postboxcreatefolderapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postboxcreatefolderapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postboxcreatefolderapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\box\create-folder:application\json:cp-biz-common-sys-apis-config" doc:id="91aabb83-71b9-4675-bfe6-fe4b7e39266c" name="post:\box\create-folder:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="c435343e-bf40-4632-bc38-4ade58223e41" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postboxcreatefolderapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\box\retrieve-file\file\(file_id)\content:cp-biz-common-sys-apis-config-test" doc:id="ba538640-95b8-41ed-9733-d0fb5b8f41ff">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Retrieve File Request" doc:id="5e9aa8d1-62e2-4a71-932b-864b89a8a95a" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="168ad39d-df73-41a1-8aaa-65d3a1c98551" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getboxretrievefilefilefileidcontentcpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://getboxretrievefilefilefileidcontentcpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getboxretrievefilefilefileidcontentcpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="228647bd-d09c-4b31-8ee7-b9c9fe3ecc1c" >
+				<munit:payload value="#[readUrl('classpath://getboxretrievefilefilefileidcontentcpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getboxretrievefilefilefileidcontentcpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getboxretrievefilefilefileidcontentcpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\box\retrieve-file\file\(file_id)\content:cp-biz-common-sys-apis-config" doc:id="421cc2b4-cf9f-43c5-84ea-133c79892ae6" name="get:\box\retrieve-file\file\(file_id)\content:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="b0dd5046-a419-4d3c-a919-10f11dad7760" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getboxretrievefilefilefileidcontentcpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\box\retrieve-fileinfo\(file_id):cp-biz-common-sys-apis-config-test" doc:id="2ce802b9-b59e-49bb-a6ab-c372883a8b8b">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Retrieve File Info Request" doc:id="da45bf46-7840-4f7d-b3b7-6b3103b3bb4b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c2e584b0-c150-4f9c-85b0-3e3b7fd51da3" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getboxretrievefileinfofileidcpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://getboxretrievefileinfofileidcpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getboxretrievefileinfofileidcpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="27704831-dcd0-4a8a-b1c3-d63561181853" >
+				<munit:payload value="#[readUrl('classpath://getboxretrievefileinfofileidcpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getboxretrievefileinfofileidcpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getboxretrievefileinfofileidcpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\box\retrieve-fileinfo\(file_id):cp-biz-common-sys-apis-config" doc:id="9e1cf8a5-635d-49d0-9852-9ce89569bf43" name="get:\box\retrieve-fileinfo\(file_id):cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="0b0bc6cd-5a5f-4e16-9289-8899c6297166" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getboxretrievefileinfofileidcpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="delete:\box\delete-file\(file_id):cp-biz-common-sys-apis-config-test" doc:id="91584ba3-db45-45de-a75a-43faec6c4505">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Delete File Request" doc:id="c1b25f2c-9452-427a-9731-c544fe15eb16" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="19a0d37d-f1fc-470b-bd02-a5f38d394aec" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[readUrl('classpath://deleteboxdeletefilefileidcpbizcommonsysapisconfigtest\mock_payload.dwl')]" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://deleteboxdeletefilefileidcpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://deleteboxdeletefilefileidcpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="c05d5b65-2d13-4b39-9969-cd1209a5df2d" >
+				<munit:payload value="#[readUrl('classpath://deleteboxdeletefilefileidcpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://deleteboxdeletefilefileidcpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://deleteboxdeletefilefileidcpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to delete:\box\delete-file\(file_id):cp-biz-common-sys-apis-config" doc:id="aeae04a2-bc98-439f-a285-1a82f75a554b" name="delete:\box\delete-file\(file_id):cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="9601e1ae-1f40-47a3-b936-94e5a85bee6a" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import deleteboxdeletefilefileidcpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\box\upload-file:application\json:cp-biz-common-sys-apis-config-test" doc:id="71476134-b316-456d-9f27-dae764ce5029">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Upload File Request" doc:id="cb86ba64-a093-4984-bc9d-ce620020282d" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0283bad7-8773-469a-81ad-d1b927e70bd3" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postboxuploadfileapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://postboxuploadfileapplicationjsoncpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postboxuploadfileapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="6f740145-2d90-4b29-b970-6b6a40f1d388" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postboxuploadfileapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postboxuploadfileapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postboxuploadfileapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\box\upload-file:application\json:cp-biz-common-sys-apis-config" doc:id="4d7c0fbe-a606-437f-a4db-8a71fb2a91d6" name="post:\box\upload-file:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="61c0e45f-5773-4d6e-b44a-2b9af329372f" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postboxuploadfileapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\box\upload-file-version\(file_id):application\json:cp-biz-common-sys-apis-config-test" doc:id="f96345c9-d16f-4612-9b9a-0d6b592a7b00">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Upload File Version Request" doc:id="b40976fa-40fd-412f-a2c3-4456f0e286f9" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="be7bd4ca-a1ec-4508-b550-85baf8a4a24c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postboxuploadfileversionfileidapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://postboxuploadfileversionfileidapplicationjsoncpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postboxuploadfileversionfileidapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="6aaaa6de-dae8-4a27-a504-2a551199fb61" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postboxuploadfileversionfileidapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postboxuploadfileversionfileidapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postboxuploadfileversionfileidapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\box\upload-file-version\(file_id):application\json:cp-biz-common-sys-apis-config" doc:id="f18e7bb0-c9dd-4a10-adbb-1c6d4ca542d8" name="post:\box\upload-file-version\(file_id):application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="fe9bdc87-f5df-4383-b9ad-c5c8970f1372" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postboxuploadfileversionfileidapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\email:cp-biz-common-sys-apis-config-test" doc:id="c23a4161-2d23-45be-bac8-2f4ed2594b2c">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Email Send Connector" doc:id="1e7da13e-b74c-4c6d-b4b1-377a1a815962" processor="email:send">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="18537fe5-0dcb-4a03-becc-631845dd0102" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1emailcpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="c68092f3-9109-4c05-bf96-82ee59c30f16" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postv1emailcpbizcommonsysapisconfigtest\set-event_payload.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Refer to post:\v1\email:cp-biz-common-sys-apis-config" doc:id="2b6b9446-f8e4-42be-9116-e432ab7681b1" name="post:\v1\email:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="cbfa32e4-a528-41e6-94c5-bdcd3da6beff" >
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1emailcpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\ftp-list:application\json:cp-biz-common-sys-apis-config-test" doc:id="2b310f7d-cf29-4282-937b-8b26c3b58cc6">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock FTP List" doc:id="75d82832-0ff0-4c05-be91-8f14c824fea0" processor="ftp:list">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="57b22887-3784-4084-ad2e-087efd5f967b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1ftplistapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postv1ftplistapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="ftpConfig" value="#[output application/json --- readUrl('classpath://postv1ftplistapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="b0a236ff-1424-4e11-a0da-05b1763a1864" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postv1ftplistapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postv1ftplistapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1ftplistapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\ftp-list:application\json:cp-biz-common-sys-apis-config" doc:id="3b2c5a1e-0e80-49a4-bd83-d2dd15be83f7" name="post:\v1\ftp-list:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="7278513c-cf35-40fd-91b1-1803d09196c7" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1ftplistapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\ftp-read:application\json:cp-biz-common-sys-apis-config-test" doc:id="f175e2d4-9fbb-4a09-a74a-2ed8e93b8c6b">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock FTP Read" doc:id="276961af-c574-4f96-a415-01f99c1a20fc" processor="ftp:read">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8985f713-e774-477e-87a6-c580ad105949" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output text/csv --- readUrl('classpath://postv1ftpreadapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="text/csv" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://postv1ftpreadapplicationjsoncpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postv1ftpreadapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="ftpConfig" value="#[output application/json --- readUrl('classpath://postv1ftpreadapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="01329ff1-3ed4-4662-b59e-b65dc40f045a" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postv1ftpreadapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postv1ftpreadapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1ftpreadapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\ftp-read:application\json:cp-biz-common-sys-apis-config" doc:id="cdec29c1-ee46-4e24-8549-236e839d5e52" name="post:\v1\ftp-read:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="4e6ca41a-1dd6-4976-894a-a67ac9d54196" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1ftpreadapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\ftp-move:application\json:cp-biz-common-sys-apis-config-test" doc:id="30d4afd2-ac88-4b1f-83f8-e731b22c6540">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock FTP Move" doc:id="379077a6-cad3-4243-82dd-139e4abfbb7e" processor="ftp:move">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f6bcfbf8-a117-4ce4-94d5-9817f0283931" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1ftpmoveapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://postv1ftpmoveapplicationjsoncpbizcommonsysapisconfigtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postv1ftpmoveapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="ftpConfig" value="#[output application/json --- readUrl('classpath://postv1ftpmoveapplicationjsoncpbizcommonsysapisconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="1b734504-90ea-4c15-abaa-2ed075529623" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postv1ftpmoveapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postv1ftpmoveapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1ftpmoveapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\ftp-move:application\json:cp-biz-common-sys-apis-config" doc:id="a8839717-fbae-447d-89a1-8f294cbee498" name="post:\v1\ftp-move:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="16a19b91-63e0-48ed-82a8-f7ea557443c1" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1ftpmoveapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\marketo\bulk\export\activities:application\json:cp-biz-common-sys-apis-config-test" doc:id="60780f32-605d-40ca-a026-701176da0b0d">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when Get OAuth Access Token" doc:id="0b3eab5a-0b9b-4554-9843-d8a5a1573ebc" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+				
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Create Export Activities" doc:id="9b494fa7-64b5-412b-8e4e-ac257d8164b8" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Marketo Export Create Activities" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="/bulk/v1/activities/export/create.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" />
+				</munit-tools:then-return>
+				
+				</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="45a6a964-f864-4506-b015-42f0a8731faf" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\marketo\bulk\export\activities:application\json:cp-biz-common-sys-apis-config" doc:id="ea663719-8335-4eb8-8bd0-cb7f12240adf" name="post:\v1\marketo\bulk\export\activities:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="7d8a032b-fca1-49b6-b891-41443fdde30e" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\marketo\bulk\export\leads:application\json:cp-biz-common-sys-apis-config-test" doc:id="4749d225-6bfe-48c7-921a-acf826f96636">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Copy_of_Mock when Get OAuth Access Token" doc:id="de4af8cc-e922-427e-a177-0a9c1a60d83b" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Create Export Lead" doc:id="53672d67-a36f-4199-b219-9399e2873628" processor="http:request">
+				
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Marketo Create Leads" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="/bulk/v1/leads/export/create.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportleadsapplicationjsoncpbizcommonsysapisconfigtest\mock_payload.dwl')]" />
+				</munit-tools:then-return>
+				
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="d1d699f3-5ead-446c-bd02-c45aa13ef126" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportleadsapplicationjsoncpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postv1marketobulkexportleadsapplicationjsoncpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1marketobulkexportleadsapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://postv1marketobulkexportleadsapplicationjsoncpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\marketo\bulk\export\leads:application\json:cp-biz-common-sys-apis-config" doc:id="3bf9c7ba-b879-46e0-ab47-95be53ed642f" name="post:\v1\marketo\bulk\export\leads:application\json:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="611e45a7-f6e1-4a27-80b2-4854ae4850e8" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1marketobulkexportleadsapplicationjsoncpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\v1\marketo\bulk\export\leads\job\status:cp-biz-common-sys-apis-config-test" doc:id="c709ea62-8d5a-4c9d-8cd0-5b10de7eaa16">
+		<munit:behavior >
+		<munit-tools:mock-when doc:name="Copy_of_Mock when Get OAuth Access Token" doc:id="3330bafd-03a4-4ffa-b2fb-0d65131de7df" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Export Lead Job Status" doc:id="a4dbd532-d73b-405c-9ce9-5e3b8b7070f1" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="/bulk/v1/leads/export.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportleadsjobstatuscpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" />
+				</munit-tools:then-return></munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="4e18ffd7-e235-476e-9d4f-0b55299916f7" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportleadsjobstatuscpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://getv1marketobulkexportleadsjobstatuscpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getv1marketobulkexportleadsjobstatuscpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://getv1marketobulkexportleadsjobstatuscpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\v1\marketo\bulk\export\leads\job\status:cp-biz-common-sys-apis-config" doc:id="cd80c69c-6415-4bb3-a4e4-a7395f158ccf" name="get:\v1\marketo\bulk\export\leads\job\status:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="de2ad29f-3e1f-4d45-8685-564918b0c0b1" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getv1marketobulkexportleadsjobstatuscpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\v1\marketo\bulk\export\activities\job\status:cp-biz-common-sys-apis-config-test" doc:id="c2427354-f138-454b-ab43-35aca2e68700">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Copy_of_Copy_of_Mock when Get OAuth Access Token" doc:id="d5f5509f-8956-4707-85d4-59561bf0e2b5" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when export activities job status" doc:id="29b9eff3-0009-4918-8647-c253c8d5a511" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="/bulk/v1/activities/export.json" attributeName="path" />
+					<munit-tools:with-attribute whereValue="/bulk/v1/activities/export.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportactivitiesjobstatuscpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" />
+				</munit-tools:then-return>
+				
+							</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="b7faf140-4358-4df4-9023-7332887eaeb7">
+				<munit:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportactivitiesjobstatuscpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://getv1marketobulkexportactivitiesjobstatuscpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables>
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getv1marketobulkexportactivitiesjobstatuscpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://getv1marketobulkexportactivitiesjobstatuscpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\v1\marketo\bulk\export\activities\job\status:cp-biz-common-sys-apis-config" doc:id="4cce7e36-cd7a-48c8-b699-db2315675d0b" name="get:\v1\marketo\bulk\export\activities\job\status:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="4b330586-b2b7-4ab3-b147-0347c550867f" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getv1marketobulkexportactivitiesjobstatuscpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\marketo\bulk\export\leads\(export_id)\enqueue:cp-biz-common-sys-apis-config-test" doc:id="5ac3f06e-a168-4b81-b3fa-91f411e3bd54">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Copy_of_Copy_of_Copy_of_Mock when Get OAuth Access Token" doc:id="30415266-bbeb-43a6-9d6c-0488dc9d55a7" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Create Leads Enqueue" doc:id="c0428d7a-7f80-4b90-934b-077e4ffe0bf9" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Marketo leads Create Enqueue" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="/bulk/v1/leads/export/{export_id}/enqueue.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportleadsexportidenqueuecpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+				
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="bf3a6e31-cb4c-43dd-9b61-d9e33b38c5f2" >
+				<munit:payload value="#[readUrl('classpath://postv1marketobulkexportleadsexportidenqueuecpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://postv1marketobulkexportleadsexportidenqueuecpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1marketobulkexportleadsexportidenqueuecpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://postv1marketobulkexportleadsexportidenqueuecpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\marketo\bulk\export\leads\(export_id)\enqueue:cp-biz-common-sys-apis-config" doc:id="951312da-e929-4057-b092-39231c3aa7d1" name="post:\v1\marketo\bulk\export\leads\(export_id)\enqueue:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="91a2a33a-8b57-4a27-b71b-2222298ec695" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1marketobulkexportleadsexportidenqueuecpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\v1\marketo\bulk\export\activities\(export_id)\enqueue:cp-biz-common-sys-apis-config-test" doc:id="7bc7d6f7-9198-47df-851a-37636f1aec6e">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Copy_of_Copy_of_Copy_of_Copy_of_Mock when Get OAuth Access Token" doc:id="40548c48-6a19-49a3-905c-e933546b8812" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Create ACtivities Enqueue" doc:id="ac9f8cf6-feea-4f1d-aeb9-ca2f67f740b9" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Marketo Export Create Enqueue Export Activities" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="/bulk/v1/activities/export/{export_id}/enqueue.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesexportidenqueuecpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+				
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="735dbf39-d8e3-4941-a1cc-a1e1c15c0cb6" >
+				<munit:payload value="#[readUrl('classpath://postv1marketobulkexportactivitiesexportidenqueuecpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://postv1marketobulkexportactivitiesexportidenqueuecpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postv1marketobulkexportactivitiesexportidenqueuecpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://postv1marketobulkexportactivitiesexportidenqueuecpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\v1\marketo\bulk\export\activities\(export_id)\enqueue:cp-biz-common-sys-apis-config" doc:id="b011b198-f313-41fa-9012-d01353b93c14" name="post:\v1\marketo\bulk\export\activities\(export_id)\enqueue:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="4479aa1e-9eef-42da-abb3-4e2cda40c2c1" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postv1marketobulkexportactivitiesexportidenqueuecpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\v1\marketo\bulk\export\leads\(export_id)\status:cp-biz-common-sys-apis-config-test" doc:id="3fae0ac3-02cc-4366-901b-c8d3ef5aae68">
+		<munit:behavior >
+		<munit-tools:mock-when doc:name="Mock when Get OAuth Access Token" doc:id="311f6abc-b1a5-481c-b6b4-562123ff392c" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+				
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Retrieve Status Leads" doc:id="0db85dbd-417c-413d-9bd1-ead01e6cb9e7" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Marketo Leads Retrieve Status" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="/bulk/v1/leads/export/{export_id}/status.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportleadsexportidstatuscpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+				
+				
+				
+				
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="dfed38fd-3e55-43b3-8ef3-c5bca3312fb7" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportleadsexportidstatuscpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://getv1marketobulkexportleadsexportidstatuscpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getv1marketobulkexportleadsexportidstatuscpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://getv1marketobulkexportleadsexportidstatuscpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\v1\marketo\bulk\export\leads\(export_id)\status:cp-biz-common-sys-apis-config" doc:id="78754446-ed10-4cea-b723-facdd19ebb2d" name="get:\v1\marketo\bulk\export\leads\(export_id)\status:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="882fe1f0-58b1-4435-8db0-9b3d5bc44fea" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getv1marketobulkexportleadsexportidstatuscpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\v1\marketo\bulk\export\activities\(export_id)\status:cp-biz-common-sys-apis-config-test" doc:id="0f2f00ef-179a-40b7-985b-3f3159e47579">
+		<munit:behavior >
+		<munit-tools:mock-when doc:name="Mock when Get OAuth Access Token" doc:id="f9200ebd-8c81-4ef1-b32f-7678d0da2d78" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+				
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Retrieve Status Activities" doc:id="1a950726-565c-4bf8-8905-c6e605f9dc76" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Marketo Export Retrieve  Status Export Activities" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="/bulk/v1/activities/export/{export_id}/status.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportactivitiesexportidstatuscpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+				
+				
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="827b5dc5-663b-41c3-a6b6-b4b9540d4899" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportactivitiesexportidstatuscpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://getv1marketobulkexportactivitiesexportidstatuscpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getv1marketobulkexportactivitiesexportidstatuscpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://getv1marketobulkexportactivitiesexportidstatuscpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\v1\marketo\bulk\export\activities\(export_id)\status:cp-biz-common-sys-apis-config" doc:id="2239e043-61fe-44b6-8c36-29f5ff11b256" name="get:\v1\marketo\bulk\export\activities\(export_id)\status:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="1eaceaa3-9d41-4374-b715-9edf8d605ab9" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getv1marketobulkexportactivitiesexportidstatuscpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\v1\marketo\bulk\export\activities\(export_id)\file:cp-biz-common-sys-apis-config-test" doc:id="0e35b8df-4e5a-4e86-ba10-f06156f6722c">
+		<munit:behavior >
+		<munit-tools:mock-when doc:name="Mock when Get OAuth Access Token" doc:id="0275fb0b-6eda-43d4-969a-b73390c711d7" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+				
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Retrieve File Activities" doc:id="fba0dfe1-f5e6-4af9-9d72-9c10556f030e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Marketo Export Retrieve File Export Activities" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="/bulk/v1/activities/export/{export_id}/file.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportactivitiesexportidfilecpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+				
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="4b1c831f-5074-4fb7-957e-ebd67c9b8a56" >
+				<munit:payload value="#[readUrl('classpath://getv1marketobulkexportactivitiesexportidfilecpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getv1marketobulkexportactivitiesexportidfilecpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getv1marketobulkexportactivitiesexportidfilecpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://getv1marketobulkexportactivitiesexportidfilecpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\v1\marketo\bulk\export\activities\(export_id)\file:cp-biz-common-sys-apis-config" doc:id="d3977fba-6937-430e-9dff-38a5813824da" name="get:\v1\marketo\bulk\export\activities\(export_id)\file:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="50b25d10-da5f-453c-9405-8cd0e05fd903" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getv1marketobulkexportactivitiesexportidfilecpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\v1\marketo\bulk\export\leads\(export_id)\file:cp-biz-common-sys-apis-config-test" doc:id="824c62b0-42ad-45bb-a3ca-53fe6deb1688">
+		<munit:behavior >
+		<munit-tools:mock-when doc:name="Mock when Get OAuth Access Token" doc:id="dcfc64c1-bf33-4080-821f-05ef92a36911" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="/identity/oauth/token" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postv1marketobulkexportactivitiesapplicationjsoncpbizcommonsysapisconfigtest\get_access_token_mock_payload.dwl')]" />
+				</munit-tools:then-return>
+				
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Retrieve File Leads" doc:id="4e1bde61-2776-4735-9f54-f0151a2e7313" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Marketo Leads Retrieve File" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="/bulk/v1/leads/export/{export_id}/file.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getv1marketobulkexportleadsexportidfilecpbizcommonsysapisconfigtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+				
+				
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="2da48064-c3ce-4a67-a624-e6bdd342d457" >
+				<munit:payload value="#[readUrl('classpath://getv1marketobulkexportleadsexportidfilecpbizcommonsysapisconfigtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getv1marketobulkexportleadsexportidfilecpbizcommonsysapisconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getv1marketobulkexportleadsexportidfilecpbizcommonsysapisconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="httpStatus" value="#[readUrl('classpath://getv1marketobulkexportleadsexportidfilecpbizcommonsysapisconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\v1\marketo\bulk\export\leads\(export_id)\file:cp-biz-common-sys-apis-config" doc:id="e23ef851-bee4-429a-9a46-191dd0fb58b8" name="get:\v1\marketo\bulk\export\leads\(export_id)\file:cp-biz-common-sys-apis-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="cc862c80-da76-4695-8827-2024331ceb20" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getv1marketobulkexportleadsexportidfilecpbizcommonsysapisconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="cp-biz-common-sys-apis-test-suite-get:\v1\rma\history:cp-biz-common-sys-apis-200-2configTest" doc:id="3e629da7-ed35-4fd1-b09b-66b259e864c6" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="cp-biz-common-sys-apis-main" />
+			<munit:enable-flow-source value="get:\v1\rma\history:cp-biz-common-sys-apis-config" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e490f7c4-ddb8-404e-a15f-530076d0ea6a" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Aws Redshift Select" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="a6299aa0-9c15-4591-b6c6-d1a73885abab" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('scaffolder/response/get_200_v1_rma_history_application_json.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<http:request method="GET" doc:name="Request" doc:id="9b583677-24ef-456f-b4ab-b64bf193564e" config-ref="HTTP_Request_configuration" path="/api/v1/rma/history" >
+			</http:request>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert That Status Code is 200" doc:id="f9769670-55e7-4b86-8508-16a3ed4e94e7" message="The HTTP Status code is not correct!" expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" />
+			<munit-tools:assert-that doc:name="Assert That - Payload is Expected" doc:id="398840b3-18e6-4006-9003-a8edae8ecd7c" message="The response payload is not correct!" expression="#[not isEmpty(payload)]" is="#[MunitTools::equalTo(true)]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="cp-biz-common-sys-apis-test-suite-get:\v1\rma\history:cp-biz-common-sys-apis-200-2-configTest" doc:id="baeefff8-382d-41c0-866e-240525689d8e" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="cp-biz-common-sys-apis-main" />
+			<munit:enable-flow-source value="get:\v1\rma\history:cp-biz-common-sys-apis-config" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="68790a8b-62d3-4599-930e-5304018b5251" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Aws Redshift Select" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="a6299aa0-9c15-4591-b6c6-d1a73885abab" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('scaffolder/response/get_200_v1_rma_history_application_json.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<http:request method="GET" doc:name="Request" doc:id="43a5d726-be7d-46e4-9eaa-cc553d0b1a33" config-ref="HTTP_Request_configuration" path="/api/v1/rma/history" >
+				<http:query-params ><![CDATA[#[output application/java
+---
+{
+	mac_address : "120:4r:23:4e:67"
+}]]]></http:query-params>
+			</http:request>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert That Status Code is 200" doc:id="67f4d9c2-9a0e-49ee-9949-4b3586265220" message="The HTTP Status code is not correct!" expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" />
+			<munit-tools:assert-that doc:name="Assert That - Payload is Expected" doc:id="13ea7689-7fca-4e0a-a122-f2ba5f96662a" message="The response payload is not correct!" expression="#[not isEmpty(payload)]" is="#[MunitTools::equalTo(true)]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="cp-biz-common-sys-apis-test-suite-get:\v1\rma\history:cp-biz-common-sys-apis-400-configTest" doc:id="c2965879-40c4-404a-bd7a-6daf6fb86aed" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="cp-biz-common-sys-apis-main" />
+			<munit:enable-flow-source value="get:\v1\rma\history:cp-biz-common-sys-apis-config" />
+		</munit:enable-flow-sources>
+		<munit:behavior>
+			<set-variable value='#[write(({"eq":"2020-11-11"}),"application/json")]' doc:name="Set Query" doc:id="0b4cf333-de79-418b-8d98-2b36aa96f82e" variableName="setQuery"/>
+		</munit:behavior>
+		<munit:execution>
+			<http:request method="GET" doc:name="Request" doc:id="5730897f-6253-4276-ba86-3130163e8d4b" config-ref="HTTP_Request_configuration" path="/api/v1/rma/history" >
+				<http:query-params ><![CDATA[#[output application/java
+---
+{
+	created_week : vars.setQuery
+}]]]></http:query-params>
+				<http:response-validator >
+					<http:success-status-code-validator values="#[400]" />
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert That Status Code is 400" doc:id="d917c9c1-1654-4104-b571-cc42127a79c0" message="The HTTP Status code is not correct!" expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]" />
+		</munit:validation>
+	</munit:test>
+	
+	
+    
+</mule>

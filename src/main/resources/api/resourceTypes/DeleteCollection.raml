@@ -1,0 +1,49 @@
+#%RAML 1.0 ResourceType
+delete:
+  description: Delete a <<typeName>>
+  body:
+    application/json:
+      type: <<deleterequest-type>>
+      example: <<deleterequest-example>>
+  responses:
+    204:
+    400:
+      body:
+        application/json:
+          type: <<error-response>>
+          example: !include ../examples/error/errorExampleResponse400.json
+    404:
+      body:
+        application/json:
+          type: <<error-response>>
+          example: !include ../examples/error/errorExampleResponse404.json
+    405:
+      body:
+        application/json:
+          type: <<error-response>>
+          example: !include ../examples/error/errorExampleResponse405.json
+    406:
+      body:
+        application/json:
+          type: <<error-response>>
+          example: !include ../examples/error/errorExampleResponse406.json
+    415:
+      body:
+        application/json:
+          type: <<error-response>>
+          example: !include ../examples/error/errorExampleResponse415.json
+    500:
+      body:
+        application/json:
+          type: <<error-response>>
+          example: !include ../examples/error/errorExampleResponse500.json
+    503:
+      body:
+        application/json:
+          type: <<error-response>>
+          example: !include ../examples/error/errorExampleResponse503.json
+    504:
+      body:
+        application/json:
+          type: <<error-response>>
+          example: !include ../examples/error/errorExampleResponse504.json

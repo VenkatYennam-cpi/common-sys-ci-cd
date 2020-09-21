@@ -1,0 +1,69 @@
+#%RAML 1.0 Library
+
+
+types:           
+  rma_history_response: 
+      type: array
+      description: Import Marketo response schema
+      items:
+        properties:
+          created_week:
+            description: RMA Created Week
+            required: true
+            type: string
+          ticket_number:
+            description: Support Ticket number
+            required: false
+            type: string
+          mac_address:
+            description: Station Mac Address
+            required: true
+            type: string
+          station_serial_num:
+            description: Station Serial number
+            required: true
+            type: string
+          evse_id:
+            description: EVSE ID
+            required: false
+            type: string
+          station_model:
+            description: Station Model
+            required: false
+            type: string
+          station_model_details:
+            description: Station Model Detail
+            required: false
+            type: string
+          root_cause:
+            description: Root Cause
+            required: false
+            type: string
+          sent_part_details:
+            description: Sent
+            required: false
+            type: string
+          rma_num:
+            description: RMA Number
+            required: false
+            type: string
+          fso_num:
+            description: FSO Number
+            required: false
+            type: string
+          ticket_type: 
+            description: Ticket Type
+            required: false
+            type: string
+          root_cause_code:
+            description: Root Cause Code
+            required: false
+            type: string
+          part_num:
+            description: Part Number
+            required: false
+            type: string
+          part_serial_num:
+            description: Part Serial Number
+            required: false
+            type: string

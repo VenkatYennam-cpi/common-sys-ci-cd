@@ -1,0 +1,49 @@
+#%RAML 1.0 Library
+
+
+types:           
+  marketo_status_response: 
+      type: object
+      description: Marketo status response schema
+      properties:
+       request_id:
+        type: string
+        required: false
+        description: Request Id
+       result:
+        type: array
+        description: Result of the request
+        items:
+         properties: 
+           batch_id:
+            type: number
+            required: true
+            description: Unique integer id of the import batch
+           import_id:
+            type: string
+            required: false
+            description: Import Id
+           status:
+            type: string
+            required: false
+            description: status of the batch
+           num_of_leads_processed:
+            type: number
+            required: false
+            description: Number of leads processed
+           num_of_rows_failed:
+            type: number
+            required: false
+            description: Number of rows failed
+           num_of_rows_with_warning:
+            type: number
+            required: false
+            description: Number of rows with warning
+           message:
+            type: string
+            required: false
+            description: Message
+       success:
+          type: boolean
+          required: false
+          description: Whether the request succeeded

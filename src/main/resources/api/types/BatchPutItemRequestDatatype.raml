@@ -1,0 +1,14 @@
+#%RAML 1.0 DataType
+properties:
+  account_id:
+    description: Account to be used for configuration
+    required: true
+    type: string
+  table_name: 
+    description: Dynamo DB table name
+    required: true
+    type: string
+  items: 
+    description: Items or rows to be inserted into table
+    required: true
+    type: array

@@ -1,0 +1,57 @@
+#%RAML 1.0 Library
+
+
+types:           
+  export_lead_marketo_request: 
+      type: object
+      description: Export Marketo request schema
+      properties:
+       column_header_names:
+        type: object
+        required: false
+        example: {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "id": "Marketo Id",
+      "email": "Email Address"
+   }
+          
+        description: A JSON object containing key-value pairs of field and column header names.  The key must be the name of a field included in the export job.  The value will be the name of the exported column header for that field. 
+       format:
+        enum: ["CSV","TSV","SSV"]
+        required: true
+        description: File format.
+       fields:
+         type: array
+         required: true
+         description: The fields parameter accepts a JSON array of strings.Comma-separated list of fields to include in the file
+       filter:
+         type: object
+         required: true
+         description: Lead record selection criteria. Can be one of the following - "created_at", "updated_at", "static_list_name", "static_list_id", "smart_list_name", "smart_list_id"
+         properties:
+          created_at:
+            type: object
+            required: false
+            description: Date range to filter new leads on .Accepts a JSON object with the members start_at and end_at.The range must be 31 days or fewer.
+          updated_at:
+            type: object
+            required: false
+            description: Date range to filter updated leads on. Accepts a JSON object with the members start_at and end_at.The range must be 31 days or fewer.
+          static_list_name:
+            type: string
+            required: false
+            description: Name of smart list to retrieve leads from ,
+          static_list_id:
+            type: number
+            required: false
+            description: Id of static list to retrieve leads from ,
+          smart_list_name:
+            type: string
+            required: false
+            description:  Name of smart list to retrieve leads from ,
+          smart_list_id:
+            type: number
+            required: false
+            description:  Id of smart list to retrieve leads from
+            

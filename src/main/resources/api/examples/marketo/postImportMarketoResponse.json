@@ -1,0 +1,11 @@
+{
+  "request_id": "d01f#15d672f8560",
+  "result": [
+    {
+      "batch_id": 3404,
+      "import_id": "3404",
+      "status": "Queued"
+    }
+  ],
+  "success": true
+}

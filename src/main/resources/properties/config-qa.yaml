@@ -1,0 +1,80 @@
+
+env.name:  "qa"
+
+email:
+  fromAddress: "svc-integrations@chargepoint.com"
+  toAddress: "svc-integrations@chargepoint.com"
+  subject: "INFO: Custom Application Notification"
+
+box.file.link: "https://chargepoint-sandbox.app.box.com/file/"
+
+#CloudHub
+cloudhub:
+  username: "svc-mulesoft"
+  password: "![n3BEadiA3EEcnleg6NNbMW0sIipK6hBRqJH4BnfsUco=]"
+
+ftp:
+  flex:
+    username: "![m9jGfgt6k0b6w1JY0t3u4A==]"
+    password: "![CEYta4VLolo9zIxVkAaI9w==]"
+    port: "21"
+    host: "ftpam.flextronics.com"
+
+#AWS Config
+aws:
+  cpit:
+    accessKey: "![jTIg0ekrjIHy17hRjjjLVYVtBMexWNOxP1eO/Fv7vLw=]"
+    secretKey: "![sUKEjsJQwdNTbnxxSNQvmtun4uPoephG1A6Pwn/r6VVtp6iys5j6N305u+PnZKRW]"
+    region: "us-west-2"
+    role: "![4UUIbND0rfJ/TyfoKzyzXlncrgtQF2Q2LT+UbHbMI1HwAkWiYCYhVOSIk8mm80q+x0Y06X5KwFJZAPLDNv2u5Q==]"
+  cpbiz:
+    accessKey: "![jTIg0ekrjIHy17hRjjjLVYVtBMexWNOxP1eO/Fv7vLw=]"
+    secretKey: "![sUKEjsJQwdNTbnxxSNQvmtun4uPoephG1A6Pwn/r6VVtp6iys5j6N305u+PnZKRW]"
+    region: "us-west-2"
+    role: "![4UUIbND0rfJ/TyfoKzyzXlncrgtQF2Q2LT+UbHbMI1HwAkWiYCYhVOSIk8mm80q+x0Y06X5KwFJZAPLDNv2u5Q==]"
+  cpeng:
+    accessKey: "![9DgEcUA3kx+VGFbzIh5LycUnkmpEXkuIP9vAkkoctkU=]"
+    secretKey: "![yQorilTqTj+JuVidfrCZZSXm02VvX9en8DxPPWwK/Mlf8LiwoPl2Lgjcuz8UZ/cQ]"
+    region: "us-west-2"
+    role: "![ULf5U908Fneil9DDFOhZ50fPAz9nRZY+1QL0MOh35OxhnIdBcHuqW06m7o6Kx/3JvA/3/KTBfVQnjRIPGz92vfejSjwRkb2ZbhGTUiirCyc=]"
+
+#AWS DynamoDB Config
+dynamo:
+  bizapps:
+    accessKey: "AKIAUK5V3L2GCBZTB2M6"
+    secretKey: "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"
+    region: "US_WEST_2"
+
+
+redshift:
+  url: "jdbc:redshift://cpedwprod.ctnq69hlrn0r.us-west-2.redshift.amazonaws.com:5439/cpedwprod"
+  username: "svc_integrations"
+  password: "![dDvTelhVGQtMMsHCn7oMsYJDPbAu6FCBXh6GQDaL7t8=]"
+
+#OSPC Configuration
+ospc:
+  username: "pratik.singh@trinamix.com"
+  password: "Trinamix123"
+  host: "fa-epsh-test-saasfaprod1.fa.ocs.oraclecloud.com"
+
+#Marketo Configuration
+marketo:
+  us:
+    #host: "079-WYC-990.mktorest.com"
+    #clientId: "e3735a48-2aa8-4955-8074-a7a42a4b909f"
+    #clientSecret: "83n7ZY0edTmK33EoujVhXoWWauCM2eM1"
+    host: "101-XZE-052.mktorest.com"
+    clientId: "2f00fa31-8552-48ae-b7fe-409ccf100823"
+    clientSecret: "lj7f4R7d8PsrRutduFH13aKo5HpepMOZ"
+  eu: 
+    host: "788-LFX-081.mktorest.com"
+    clientId: "0056ef07-2dc7-4331-adbf-a68269c3b9d2"
+    clientSecret: "lBYOwwe9nMRbqyrijbVFbrNYR0NOtNLE"
+
+#Encryption
+encrypt:
+    key:
+       alias: "marketo-qa"
+       password: "changeit"
+    keyStore:
+       fileName: "keystore/marketokeystore-qa.jks"

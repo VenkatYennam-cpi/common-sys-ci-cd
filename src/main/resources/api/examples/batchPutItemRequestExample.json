@@ -1,0 +1,114 @@
+{
+
+  "account_id": "bizapps",
+  "table_name": "WorkOrders",
+  "items": [
+    {
+      "isa_sender_id":
+      {
+        "attribute_type":"string",
+        "value": "941714834TEST"
+      },
+      "isa_date_time": {
+        "attribute_type":"string",
+		"value": "2020-07-01T00:00:00+05:30 17580000"
+      },
+      "isa_version_num": {
+        "attribute_type":"string", 
+		"value" : "00705"
+      },
+      "isa_control_num": {
+        "attribute_type":"number", 
+		"value" : "143"
+      },
+      "gs_id_code": {
+        "attribute_type":"string", 
+		"value" : "AW"
+      },
+      "gs_sender_code": {
+        "attribute_type":"string", 
+		"value" : "9417148340230"
+      },
+      "gs_date_time": {
+        "attribute_type":"string", 
+		"value" : "2020-07-01T00:00:00+05:30 17580000"
+      },
+      "gs_control_num": {
+        "attribute_type":"number", 
+		"value" : "17"
+      },
+      "gs_version_num": {
+        "attribute_type":"string",
+		"value" : "007050"
+      },
+      "st_id_code": {
+        "attribute_type":"string", 
+		"value" : "947"
+      },
+      "st_control_num": {
+        "attribute_type":"string", 
+		"value" : "000000105"
+      },
+      "tran_date": {
+        "attribute_type":"string", 
+		"value" : "2020-06-19T00:00:00+05:30"
+      },
+      "delivery_id": {
+        "attribute_type":"string", 
+		"value" : "CHP000011"
+      },
+      "uuid": {
+        "attribute_type":"string", 
+		"value" : "576db56f-7557-40f5-8aa4-644be4ed9881"
+      },
+      "tran_purpose_code": {
+        "attribute_type":"string", 
+		"value" : "06"
+      },
+      "tran_type_code": {
+        "attribute_type":"string", 
+		"value" : "WO"
+      },
+      "entity_id_code": {
+        "attribute_type":"string", 
+		"value" : "WH"
+      },
+      "warehouse_name": {
+        "attribute_type":"string", 
+		"value" : "391160"
+      },
+      "adj_reason_code": {
+        "attribute_type":"string", 
+		"value" : "06"
+      },
+      "quantity": {
+        "attribute_type":"number", 
+		"value" : "5"
+      },
+      "uom": {
+        "attribute_type":"string", 
+		"value" : "EA"
+      },
+      "prd_id_qualifier": {
+        "attribute_type":"string", 
+		"value" : "CN"
+      },
+      "item_number": {
+        "attribute_type":"string", 
+		"value" : "99-001609-05"
+      },
+      "vendor_item_num": {
+        "attribute_type":"string", 
+		"value" : "CHPB-99-001609-05"
+      },
+      "item_descr": {
+        "attribute_type":"string", 
+		"value" : "CT4001-CAP"
+      },
+      "time_to_live": {
+        "attribute_type":"number", 
+		"value" : "1598247516"
+      }
+    }
+  ]
+}

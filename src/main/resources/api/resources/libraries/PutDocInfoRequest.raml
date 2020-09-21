@@ -1,0 +1,22 @@
+#%RAML 1.0 Library
+
+types:           
+  update_doc_request: 
+      type: object
+      description: Update document details
+      properties:
+       id:
+        type: string
+        minLength: 1
+        required: true
+        description: Id against which data needs to be updated
+       doc_name:
+        type: string
+        minLength: 1
+        required: true
+        description: Document name against which data needs to be updated.
+       comments:
+        type: string
+        minLength: 1
+        required: true
+        description: Updated comments

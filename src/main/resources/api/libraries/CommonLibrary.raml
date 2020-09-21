@@ -1,0 +1,17 @@
+#%RAML 1.0 Library
+resourceTypes:
+  postCollection: !include ../resourceTypes/PostCollection.raml
+  deleteCollection: !include ../resourceTypes/DeleteCollection.raml
+
+types:
+  createFileDataTypeRequest:  !include ../types/CreateFileDataTypeRequest.raml
+  createFileDataTypeResponse: !include ../types/CreateFileDataTypeResponse.raml
+  copyFileDataTypeRequest:  !include ../types/CopyFileDataTypeRequest.raml
+  copyFileDataTypeResponse: !include ../types/CreateFileDataTypeResponse.raml
+  readFileDataTypeRequest:  !include ../types/ReadFileDataTypeRequest.raml
+  readFileDataTypeResponse: !include ../types/ReadFileDataTypeResponse.raml
+  deleteFileDataTypeRequest: !include ../types/DeleteFileDataTypeRequest.raml
+  errorResponse: !include ../types/ErrorDataType.raml
+  listFilesDataTypeRequest:  !include ../types/ListFilesDataTypeRequest.raml
+  listFilesDataTypeResponse: !include ../types/ListFilesDataTypeResponse.raml
+

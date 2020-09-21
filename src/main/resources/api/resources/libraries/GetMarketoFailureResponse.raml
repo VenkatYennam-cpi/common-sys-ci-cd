@@ -1,0 +1,19 @@
+#%RAML 1.0 Library
+
+types:           
+  marketo_failure_response: 
+      type: object
+      description: Marketo failure response schema
+      properties:
+       batch_id:
+        type: number
+        required: true
+        description: Unique integer id of the batch
+       format:
+        type: string
+        required: true
+        description: File Format
+       failure_data:
+        type: string
+        required: true
+        description: Failure data in base64 format

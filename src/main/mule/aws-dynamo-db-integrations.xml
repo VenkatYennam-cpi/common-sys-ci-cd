@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:dynamodb="http://www.mulesoft.org/schema/mule/dynamodb" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/dynamodb http://www.mulesoft.org/schema/mule/dynamodb/current/mule-dynamodb.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	
+	
+	<flow name="mf-dynamo-db-batch-put-item" doc:id="f4b201e3-df94-464c-a16d-f4690197bc43" >
+		<logger level="INFO" doc:name="mf-dynamoDb-batch-put-item Flow Started" doc:id="82adcdee-f239-4b10-97f7-514cc899ab87" message="mf-dynamoDb-batch-put-item Flow Started" />
+		<foreach doc:name="For Each" doc:id="4cdbc78c-69e6-4f8f-b4d2-fab8ddda37f3" batchSize="${dynamoDb.batchSize}" collection="#[payload]">
+			<ee:transform doc:name="Set Batch Put Item Request" doc:id="1814ba4a-c4c2-4b5f-b247-d76dadb8d86c">
+			<ee:message>
+					<ee:set-payload resource="dwScripts/p-batch-put-item-request.dwl" />
+			</ee:message>
+		</ee:transform>
+			<dynamodb:batch-put-item doc:name="Batch put item" doc:id="33cd4c19-f823-463a-9ef1-d43422d169c5" requestPutItems="#[payload]" config-ref="Amazon_DynamoDB_Configuration" />
+		</foreach>
+		<logger level="INFO" doc:name="mf-dynamoDb-batch-put-item Flow Ended" doc:id="64464803-c416-4d3f-a806-55954e750818" message="mf-dynamoDb-batch-put-item Flow Ended"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6dbe8168-fbc6-40b8-8314-0359d633abee" type="DYNAMODB:AccessDeniedException, DYNAMODB:CONNECTIVITY, DYNAMODB:ConditionalCheckFailedException, DYNAMODB:IncompleteSignatureException, DYNAMODB:ItemCollectionSizeLimitExceededException, DYNAMODB:LimitExceededException, DYNAMODB:MissingAuthenticationTokenException, DYNAMODB:ProvisionedThroughputExceededException, DYNAMODB:RETRY_EXHAUSTED, DYNAMODB:ResourceInUseException, DYNAMODB:ResourceNotFoundException, DYNAMODB:ThrottlingException, DYNAMODB:Unknown, DYNAMODB:UnrecognizedClientException, DYNAMODB:ValidationException">
+				<logger level="INFO" doc:name="Logger" doc:id="7e55af51-0a25-4251-bfe7-c7afbdd28fd6" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<sub-flow name="mf-dynamo-db-scan" doc:id="cf01bba2-8e9f-4a57-b699-b4b7542c660a" >
+		<logger level="INFO" doc:name="mf-dynamo-db-scan Flow Started" doc:id="cf88b3a8-9782-40fa-a9c8-621e08d4a4dd" message="mf-dynamo-db-scan Flow Started"/>
+		<ee:transform doc:name="DW Scan Request Transform" doc:id="31c41e59-a455-4ecc-ba54-b97363f40a15" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwScripts/v-dynamo-db-config.dwl" variableName="configVarAws" />
+				<ee:set-variable resource="dwScripts/p-scan-request-transform.dwl" variableName="scanOperationRequest" />
+				<ee:set-variable variableName="scanOperationResponse" ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+
+    scannedCount: 0,
+    count: 0,
+    lastEvaluatedKey: null,
+    consumedCapacity: null,
+    items: []
+
+}]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Ref sf-dynamo-db-scan" doc:id="50006872-fc58-4958-a164-4bdc71160109" name="sf-dynamo-db-scan"/>
+		<ee:transform doc:name="Response Json Payload" doc:id="e923d4b1-7ef2-4a7b-a38b-8b8606257b05" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/p-scan-response-transform.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-dynamo-db-scan Flow Ended" doc:id="dd2c94e6-bed8-4036-8712-f95a00b0e4a9" message="mf-dynamo-db-scan Flow Ended"/>
+	</sub-flow>
+	<sub-flow name="sf-dynamo-db-scan" doc:id="06d46e6a-ac52-4c8d-b176-12098d36c6c8" >
+		<logger level="INFO" doc:name="sf-dynamo-db-scan Flow Started" doc:id="7466722d-edec-4003-82bd-db0e0be82115" message="sf-dynamo-db-scan Flow Started"/>
+		<dynamodb:scan doc:id="38d4ec1d-d16c-4256-9cbe-e1d86a4704c2" config-ref="Amazon_DynamoDB_Configuration" tableName="#[vars.scanOperationRequest.table_name]" segment='#[vars.scanOperationRequest."segment"]' attributesToGets="#[vars.scanOperationRequest.attributes_to_get]" select='#[vars.scanOperationRequest."select"]' totalSegments="#[vars.scanOperationRequest.total_segments]" attributeNames="#[vars.scanOperationRequest.expression_attribute_names]" consistentRead="#[vars.scanOperationRequest.consistent_read]" filterExpression="#[vars.scanOperationRequest.filter_expression]" indexName="#[vars.scanOperationRequest.index_name]" limit='#[vars.scanOperationRequest."limit"]' projectionExpression="#[vars.scanOperationRequest.projection_expression]" returnConsumedCapacity="#[vars.scanOperationRequest.return_consumed_capacity]" attributeValues="#[vars.scanOperationRequest.expression_attribute_values]" exclusiveStartKey="#[vars.scanOperationRequest.exclusive_start_key]" conditionFilter="#[vars.scanOperationRequest.conditional_filters]" doc:name="DynamoDB Scan"/>
+		<ee:transform doc:name="Set DW Set Scan Request And Response" doc:id="7a30c0ae-b490-48c0-bbb6-fa72adcb8919">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="scanOperationRequest"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.scanOperationRequest - "exclusive_start_key") ++ (if(not isEmpty(payload.lastEvaluatedKey))({
+	exclusive_start_key: payload.lastEvaluatedKey
+}) else {})]]></ee:set-variable>
+						<ee:set-variable variableName="scanOperationResponse"><![CDATA[%dw 2.0
+output application/java
+---
+(flatten(([payload] map ((item, index) -> {
+
+    scannedCount: (item.scannedCount default 0) + (vars.scanOperationResponse[index].scannedCount default 0),
+    count: (item.count default 0) + (vars.scanOperationResponse[index].count default 0),
+    lastEvaluatedKey: item.lastEvaluatedKey,
+    consumedCapacity: item.consumedCapacity,
+    items: (item.items default []) ++ (vars.scanOperationResponse[index].items default [])
+
+}))))]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+		<choice doc:name="Choice" doc:id="cdd03456-89f1-4473-80f2-dfcf7cfc6f0d">
+			<when expression="#[(not isEmpty(payload.lastEvaluatedKey)) and (isEmpty(vars.scanOperationRequest.limit))]">
+				<flow-ref doc:name="Ref sf-dynamo-db-scan" doc:id="16400764-3c9c-4391-834d-8509f679b929" name="sf-dynamo-db-scan" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Pagination Not Required" doc:id="a3210289-40fb-4617-9611-9d24f7669e9f" message="Pagination Not Required"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="sf-dynamo-db-scan Flow Ended" doc:id="328aab51-cab5-42c8-985e-cc77038e5b4d" message="sf-dynamo-db-scan Flow Ended"/>
+	</sub-flow>
+	<sub-flow name="mf-rma-history-implementation" doc:id="959603a4-8664-4011-bbb8-b5fb7aa31854" >
+		<logger level="INFO" doc:name="mf-rma-history-implementation Flow Started" doc:id="b73b5493-64fb-4a8e-839b-eab20e5f6431" message="mf-rma-history-implementation Flow Started"/>
+		<ee:transform doc:name="Rma History Query Request" doc:id="47b1e31b-5d6e-4286-9859-fd175e226aca" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/p-getRmaHistoryRequest.dwl" />
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Ref sf-aws-redshift" doc:id="ebea3acc-9399-43f7-8c38-8f86c493bc7e" name="sf-aws-redshift"/>
+		<ee:transform doc:name="Rma History Query Response" doc:id="741d129f-4476-4add-9af6-702e29a71d4b" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/p-getRmaHistoryResponse.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-rma-history-implementation Flow Ended" doc:id="a1554672-1207-43e0-bdf1-4613791ffda5" message="mf-rma-history-implementation Flow Ended"/>
+	</sub-flow>
+	<sub-flow name="sf-aws-redshift" doc:id="390e6911-5a0b-4ebb-823d-6aa69c948a67" >
+		<logger level="INFO" doc:name="sf-aws-redshift Flow Started" doc:id="634532f8-727c-4210-a820-c188760f6521" message="sf-aws-redshift Flow Started"/>
+		<db:select doc:name="Aws Redshift Select" doc:id="a6299aa0-9c15-4591-b6c6-d1a73885abab" config-ref="Amazon_RedShift_Configuration">
+			<db:sql >#[payload]</db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="sf-aws-redshift Flow Ended" doc:id="e3b09942-aabb-4012-9fb3-5e61a8ea2cc1" message="sf-aws-redshift Flow Ended"/>
+	</sub-flow>
+</mule>

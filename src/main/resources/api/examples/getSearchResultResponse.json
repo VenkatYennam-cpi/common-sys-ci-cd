@@ -1,0 +1,74 @@
+[
+  {
+    "id": "12196",
+    "doc_title": "ReleaseToExternalSource",
+    "doc_type": "Document",
+    "doc_account": "scm$/planningDataLoader$/export$",
+    "doc_name": "UCMFA00012340",
+    "format": "application/zip",
+    "original_name": "ReleaseToExternal_4200.zip",
+    "extension": "zip",
+    "create_date": "7/9/20 3:36 PM",
+    "comments": ""
+  },
+  {
+    "id": "10213",
+    "doc_title": "ReleaseToExternalSource",
+    "doc_type": "Document",
+    "doc_account": "scm$/planningDataLoader$/export$",
+    "doc_name": "UCMFA00010357",
+    "format": "application/zip",
+    "original_name": "ReleaseToExternal_3203.zip",
+    "extension": "zip",
+    "create_date": "7/7/20 5:22 PM",
+    "comments": ""
+  },
+  {
+    "id": "10192",
+    "doc_title": "ReleaseToExternalSource",
+    "doc_type": "Document",
+    "doc_account": "scm$/planningDataLoader$/export$",
+    "doc_name": "UCMFA00010336",
+    "format": "application/zip",
+    "original_name": "ReleaseToExternal_3202.zip",
+    "extension": "zip",
+    "create_date": "7/7/20 4:56 PM",
+    "comments": ""
+  },
+  {
+    "id": "10135",
+    "doc_title": "ReleaseToExternalSource",
+    "doc_type": "Document",
+    "doc_account": "scm$/planningDataLoader$/export$",
+    "doc_name": "UCMFA00010279",
+    "format": "application/zip",
+    "original_name": "ReleaseToExternal_3201.zip",
+    "extension": "zip",
+    "create_date": "7/7/20 2:05 PM",
+    "comments": ""
+  },
+  {
+    "id": "10036",
+    "doc_title": "ReleaseToExternalSource",
+    "doc_type": "Document",
+    "doc_account": "scm$/planningDataLoader$/export$",
+    "doc_name": "UCMFA00010180",
+    "format": "application/zip",
+    "original_name": "ReleaseToExternal_3200.zip",
+    "extension": "zip",
+    "create_date": "7/7/20 1:52 PM",
+    "comments": ""
+  },
+  {
+    "id": "6886",
+    "doc_title": "ReleaseToExternalSource",
+    "doc_type": "Document",
+    "doc_account": "scm$/planningDataLoader$/export$",
+    "doc_name": "UCMFA00006886",
+    "format": "application/zip",
+    "original_name": "ReleaseToExternal_200.zip",
+    "extension": "zip",
+    "create_date": "7/1/20 4:30 AM",
+    "comments": ""
+  }
+]

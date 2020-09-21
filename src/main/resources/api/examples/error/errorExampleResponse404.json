@@ -1,0 +1,8 @@
+{
+    "errors":[
+    {
+        "transaction_id": "309285130592345",
+        "error_code": "APIKIT-404-NOT-FOUND-ERROR",
+        "error_message": "The request was rejected. Resource not found."
+    }]
+}

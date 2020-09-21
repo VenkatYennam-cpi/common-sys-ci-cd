@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:compression="http://www.mulesoft.org/schema/mule/compression" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/compression http://www.mulesoft.org/schema/mule/compression/current/mule-compression.xsd">
+	<sub-flow name="mf-import-marketo-flow" doc:id="ed0729b5-a389-4e5e-a54d-d6833603355f">
+		<logger level="INFO" doc:name="mf-import-marketo-flow Start" doc:id="185e2381-336e-4554-b849-20069da2df33" message="mf-import-marketo-flow Start" />
+		<ee:transform doc:name="DW for storing request and configurations" doc:id="64da6e7e-dacf-48bd-a95d-6d07ba1da20d">
+			<ee:variables>
+				<ee:set-variable variableName="configurationVar" resource="dwScripts/marketo/v-configuration.dwl" />
+				<ee:set-variable variableName="requestpayload" resource="dwScripts/marketo/v-marketo-request-payload.dwl" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-post-marketo-lead-flow" doc:id="ba6a9de4-7d5e-4f60-b7b2-720031de5a66" name="sf-post-marketo-lead-flow" />
+		<logger level="INFO" doc:name="mf-import-marketo-flow End" doc:id="18ba0dfc-26ab-4cd0-beaa-9ba2f21276e1" message="mf-import-marketo-flow End" />
+	</sub-flow>
+
+	<sub-flow name="mf-get-marketo-job-status-flow" doc:id="fc43ef46-3b71-4412-9225-25c826d977b4">
+		<logger level="INFO" doc:name="mf-get-marketo-job-status-flow Start" doc:id="c3757ccc-43c3-40a1-9c8f-b21275fd5ea7" message="mf-get-marketo-job-status-flow Start" />
+		<ee:transform doc:name="DW for storing request and configurations" doc:id="ee7b20e7-d232-46b8-9e60-246ab8e98c3c">
+			<ee:variables>
+				<ee:set-variable variableName="configurationVar" resource="dwScripts/marketo/v-configuration.dwl" />
+				<ee:set-variable variableName="batchIdVar" resource="dwScripts/marketo/v-batchid.dwl" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-get-marketo-oauth-access-token" doc:id="7686d510-bf94-484f-9555-bce04701ef9a" name="sf-get-marketo-oauth-access-token" target="marketoAccessToken" />
+		<until-successful maxRetries="${marketo.api.maxretries}" doc:name="Until Successful">
+			<http:request method="GET" config-ref="HTTP_Request_Configuration_Marketo" path="#['bulk/v1/leads/batch/' ++ vars.batchIdVar ++ '.json']" doc:name="Marketo Create Lead"
+				doc:id="2b2d8f2b-c7d7-485d-91b9-3997fcb32750" outputMimeType="application/json">
+				<http:query-params><![CDATA[#[output application/java
+					---
+					{
+						"access_token" : vars.marketoAccessToken.access_token
+					}]]]>
+				</http:query-params>
+			</http:request>
+		</until-successful>
+		<logger level="DEBUG" message="Get job status payload is ::::#[payload]" doc:name="Log Get job status payload" category="DEBUG" />
+
+		<choice doc:name="CHECK IF Success" doc:id="da373f63-3694-4508-b1dc-28328e6fc898">
+			<when expression="#[!payload.success]">
+				<set-variable value='#[payload.errors.message[0]]' doc:name="Set Error Description" doc:id="acd73bd6-5acd-4638-b703-b31c429f0c49" variableName="errorDescription" />
+				<ee:transform doc:id="069f6eb4-a5fa-4c14-b722-37940cc0c92f" doc:name="DW ErrorResponse request">
+					<ee:message>
+						<ee:set-payload resource="dwScripts/errorResponse400.dwl" />
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Set lead status response message" doc:id="aa781059-ff57-4294-930e-211f04f40048">
+					<ee:message>
+						<ee:set-payload resource="dwScripts/marketo/p-lead-status-response.dwl" />
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="mf-get-marketo-job-status-flow End" doc:id="3c963b60-4d36-47f3-b984-c617ffd05104" message="mf-get-marketo-job-status-flow End" />
+	</sub-flow>
+
+	<sub-flow name="sf-get-marketo-oauth-access-token" doc:id="c1c885e5-caea-4af7-b5c5-13210b44ee51">
+		<logger level="INFO" doc:name="GET Marketo Oauth Access Token" doc:id="419909f5-7a14-49eb-94c5-550688b7afb1" message="Inside get-marketo-oauth-access-token flow Begin" />
+		<http:request method="GET" doc:name="GET Marketo Oauth Access Token Request" config-ref="HTTP_Request_Configuration_Marketo" doc:id="844d6cbb-bea2-4d0e-91e2-41f7b6282bf0"
+			path="/identity/oauth/token" outputMimeType="application/json">
+			<http:query-params><![CDATA[#[output application/java
+			---
+			{
+				"grant_type" : "client_credentials",
+				"client_id" : vars.configurationVar.oauth_client_id,
+				"client_secret" : vars.configurationVar.oauth_client_secret
+			}]]]>
+			</http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="GET Marketo Oauth Access Token" doc:id="623fcacc-56ac-45a9-a4b2-0316d9186e29" message="Inside get-marketo-oauth-access-token flow End" />
+	</sub-flow>
+
+	<sub-flow name="sf-post-marketo-lead-flow" doc:id="d7185c18-b6b1-46ea-9689-714a18509b6d">
+		<logger level="INFO" doc:name="sf-post-marketo-lead-flow Begin" doc:id="ef31f13b-ef55-40e2-aa8c-dd0d907748ee" message="sf-post-marketo-lead-flow Begin" />
+		<flow-ref doc:name="sf-get-marketo-oauth-access-token" doc:id="5f6dc816-97d4-47a4-9227-bd1888c54577" name="sf-get-marketo-oauth-access-token" target="marketoAccessToken" />
+		<set-payload value="#[%dw 2.0 import * from dw::core::Binaries output application/java --- read((fromBase64(payload.content_data) as Binary),'application/octet-stream')]" doc:name="SP content data " />
+		<compression:decompress  doc:name="Decompress the gzip data">
+			<compression:decompressor>
+				<compression:gzip-decompressor />
+			</compression:decompressor>
+		</compression:decompress>
+		<logger level="DEBUG" category="DEBUG" doc:name="Decompress done successfully" doc:id="20202f82-87da-43b3-9708-c993e8f011af" message="File Decompressed" />
+		<ee:transform doc:name="Marketo Create Job Response" doc:id="f4d64163-8c5d-4563-87f7-ced94fe0b56d">
+			<ee:message>
+				<ee:set-payload resource="dwScripts/marketo/p-marketo-request-payload.dwl" />
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="${marketo.api.maxretries}" doc:name="Until Successful">
+			<http:request method="POST" config-ref="HTTP_Request_Configuration_Marketo" path="bulk/v1/leads.json" doc:name="Marketo Create Lead" doc:id="89788abf-53b6-4bbc-9f7e-48c7f8821e71"
+				outputMimeType="application/json">
+				<reconnect frequency="${marketo.reconnect.frequency}" count="${marketo.reconnect.count}"/>
+				<http:query-params><![CDATA[#[output application/java
+					---
+					{
+						"access_token" : vars.marketoAccessToken.access_token,
+						"format": vars.requestpayload.format,
+						("listId": vars.configurationVar.list_id) if vars.configurationVar.list_id != null
+					}]]]>
+				</http:query-params>
+			</http:request>
+		</until-successful>
+		<logger level="INFO" doc:name="sf-post-marketo-lead-flow End" doc:id="ef31f13b-ef55-40e2-aa8c-dd0d907748ee" message="sf-post-marketo-lead-flow End" />
+	</sub-flow>
+	<sub-flow name="mf-get-marketo-failures" doc:id="6724bcd1-d384-40a1-ad0f-c7cb46aa72e3" >
+		<logger level="INFO" doc:name="mf-get-marketo-failures Begin" doc:id="c4cda060-6dfe-4ac5-a3f5-82a8cf620053" message="mf-get-marketo-failures Flow Started" />
+		<ee:transform doc:name="Set batch_id and configurationVar" doc:id="9b7e4ca8-a348-486a-9c4f-5146d448f46c">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/marketo/v-configuration.dwl" variableName="configurationVar" />
+				<ee:set-variable variableName="batch_id"><![CDATA[attributes.uriParams.'batch_id']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-get-marketo-oauth-access-token" doc:id="d6ca80a3-288c-48ee-aeec-98d14d97ccc1" name="sf-get-marketo-oauth-access-token" target="marketoAccessToken"/>
+		<http:request method="GET" config-ref="HTTP_Request_Configuration_Marketo" path="/bulk/v1/leads/batch/{batchId}/failures.json" doc:name="Marketo Get Failures " doc:id="11c58c02-ad0b-40de-aa23-20943ad1369c"  outputMimeType="text/plain">
+				<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"batchId" : vars.batch_id
+}]]]></http:uri-params>
+			<http:query-params><![CDATA[#[output application/java
+					---
+					{
+						"access_token" : vars.marketoAccessToken.access_token,
+						"format": vars.requestpayload.format
+					}]]]>
+				</http:query-params>
+			</http:request>
+		<ee:transform doc:name="Response Payload to JSON" doc:id="8a07e494-8e2e-4988-befb-5bd9effb1a1b">
+			<ee:message>
+				<ee:set-payload resource="dwScripts/marketo/p-failure-response.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-get-marketo-failures End" doc:id="9f007974-5aea-41ef-8d8b-47f925f7173c" message="mf-get-marketo-failures Flow Ended" />
+	</sub-flow>
+	<sub-flow name="mf-get-marketo-warnings" doc:id="30a03632-5cf6-430d-b2c0-e79140006cc4" >
+		<logger level="INFO" doc:name="mf-get-marketo-warnings Begin" doc:id="6105cafa-f770-4307-b183-b9732183888a" message="mf-get-marketo-warnings Flow Started" />
+		<ee:transform doc:name="Set batch_id and configurationVar" doc:id="67646b6c-4ad4-4dfc-bdc6-315b49cae01e">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/marketo/v-configuration.dwl" variableName="configurationVar" />
+				<ee:set-variable variableName="batch_id"><![CDATA[attributes.uriParams.'batch_id']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-get-marketo-oauth-access-token" doc:id="bcfaddda-9c6b-4e31-b085-eb374825e036" name="sf-get-marketo-oauth-access-token" target="marketoAccessToken"/>
+		<http:request method="GET" config-ref="HTTP_Request_Configuration_Marketo" path="/bulk/v1/leads/batch/{batchId}/warnings.json" doc:name="Marketo Get Warnings" doc:id="4a12c9e3-2cdc-4fef-9ee2-27c55c101e44" outputMimeType="text/plain">
+				<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"batchId" : vars.batch_id
+}]]]></http:uri-params>
+			<http:query-params><![CDATA[#[output application/java
+					---
+					{
+						"access_token" : vars.marketoAccessToken.access_token,
+						"format": vars.requestpayload.format
+					}]]]>
+				</http:query-params>
+			</http:request>
+			
+		<ee:transform doc:name="Response Payload to JSON" doc:id="d9c3cf29-9111-4dfc-86ca-f27065606d02">
+			<ee:message>
+				<ee:set-payload resource="dwScripts/marketo/p-warning-response.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="mf-get-marketo-warnings End" doc:id="a423c86f-30b8-4601-88c8-067a25516aad" message="mf-get-marketo-warnings Flow Ended" />
+	</sub-flow>
+	<sub-flow name="mf-marketo-export-create" doc:id="af7b1fb3-d914-4f00-8d26-1c24aef53f3e" >
+		<logger level="INFO" doc:name="mf-marketo-export-create Begin" doc:id="15a9de52-2509-4334-8212-80efb797064c" message="mf-marketo-export-create  Begin"/>
+		<ee:transform doc:name="DW Set Request and configurationVar" doc:id="0a2b8de1-755f-40de-bf4b-30144661dd55" >
+			<ee:message >
+				<ee:set-payload resource="dwScripts/marketo/p-create-export-leads-and-activities-request.dwl" />
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwScripts/marketo/v-configuration-create-export.dwl" variableName="configurationVar" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-get-marketo-oauth-access-token" doc:id="fdf23b9b-ef75-4fb6-9284-898bc08b09b6" name="sf-get-marketo-oauth-access-token" target="marketoAccessToken"/>
+		<http:request method="POST" doc:name="Marketo Export Create Leads/Activities" doc:id="cc5f3a96-665b-4a77-ba05-07b1f84c6754" config-ref="HTTP_Request_Configuration_Marketo" path="#[vars.configurationVar.path]">
+			<http:query-params><![CDATA[#[output application/java
+					---
+					{
+						"access_token" : vars.marketoAccessToken.access_token
+					}]]]></http:query-params>
+		</http:request>
+		<flow-ref doc:name="sf-marketo-export-response" doc:id="10079bc0-b865-4762-98d9-13a61bb8a670" name="sf-marketo-export-response"/>
+		<logger level="INFO" doc:name="mf-marketo-create-export-leads End" doc:id="a207b3ab-bb2e-44b1-82c4-f8c0252e0d85" message="mf-marketo-create-export"/>
+	</sub-flow>
+	<sub-flow name="mf-marketo-retrieve-export-job-status" doc:id="58658875-8062-4a64-bca3-880bb9ebee92" >
+		<logger level="INFO" doc:name="mf-marketo-retrieve-export-job-status Begin" doc:id="56539b1e-de6f-452e-9c58-94168386949c" message="mf-marketo-retrieve-export-job-status Begin"/>
+		<ee:transform doc:name="Set Status and configurationVar" doc:id="dfe0817d-643f-4e79-87d3-76cdfafcfb28" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="status" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.status]]></ee:set-variable>
+				<ee:set-variable resource="dwScripts/marketo/v-configuration-export-get-job-status-.dwl" variableName="configurationVar" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-get-marketo-oauth-access-token" doc:id="29c9726b-4bfa-4caf-a5e2-a966df7d8dc6" name="sf-get-marketo-oauth-access-token" target="marketoAccessToken"/>
+		<http:request method="GET" doc:name="Marketo Get Job Status leads/Activities" doc:id="7dd18bb7-5561-4cc9-8b88-8108a7d2bc5e" config-ref="HTTP_Request_Configuration_Marketo" path="#[vars.configurationVar.path]">
+			<http:query-params><![CDATA[#[output application/java
+					---
+					{
+						"access_token" : vars.marketoAccessToken.access_token,
+						"status" : vars.status
+					}]]]></http:query-params>
+		</http:request>
+		<flow-ref doc:name="sf-marketo-export-response" doc:id="4d499a30-df98-4c00-a0c8-314ad04de252" name="sf-marketo-export-response"/>
+		<logger level="INFO" doc:name="mf-marketo-retrieve-export-job-status End" doc:id="74859eba-4698-4f82-a615-e38cac9505ae" message="mf-marketo-retrieve-export-job-status End"/>
+	</sub-flow>
+	<sub-flow name="mf-marketo-create-enqueue-export" doc:id="de1066ab-5def-4e3e-a2a1-da1a52bc3ed3" >
+	<logger level="INFO" doc:name="mf-marketo-create-enqueue-export Begin" doc:id="c0ef55e4-2c30-43a3-8e3e-8263a70fd6ba" message="mf-marketo-create-enqueue-export Begin"/>
+		<ee:transform doc:name="Set export_id and configurationVar" doc:id="679e9507-9fc9-43ce-ba3e-24bc80ff8c62" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="export_id" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.uriParams.export_id]]></ee:set-variable>
+				<ee:set-variable resource="dwScripts/marketo/v-configuration-export-create-enqueue.dwl" variableName="configurationVar" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-get-marketo-oauth-access-token" doc:id="ea5509aa-6d62-46b7-8fc3-4bb812d38b19" name="sf-get-marketo-oauth-access-token" target="marketoAccessToken"/>
+		<http:request method="POST" doc:name="Marketo Export Create Enqueue Export Activities/Leads" doc:id="3072ac29-7298-4456-b5fe-c5681883ab7e" config-ref="HTTP_Request_Configuration_Marketo" path="#[vars.configurationVar.path]">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"export_id" : vars.export_id
+}]]]></http:uri-params>
+			<http:query-params><![CDATA[#[output application/java
+					---
+					{
+						"access_token" : vars.marketoAccessToken.access_token
+					}]]]></http:query-params>
+		</http:request>
+		<flow-ref doc:name="sf-marketo-export-response" doc:id="4b9d6db7-3d39-48c5-ab42-9f005dcc4366" name="sf-marketo-export-response"/>
+		<logger level="INFO" doc:name="mf-marketo-create-enqueue-export End" doc:id="43eccdb8-4cb7-4c19-98c3-d88983118ddc" message="mf-marketo-create-enqueue-export End"/>
+	
+	</sub-flow>
+	<sub-flow name="mf-marketo-retrieve-file-export" doc:id="f3ed8730-2d7f-4b13-8e6c-4d2753a6c329" >
+	<logger level="INFO" doc:name="mf-marketo-retrieve-file-export Begin" doc:id="ee13bbe9-d4b7-40ae-a402-dc09cfed0c70" message="mf-marketo-retrieve-file-export Begin"/>
+		<ee:transform doc:name="Set export_id and configurationVar" doc:id="6c5b15ed-25be-4954-b73a-b1a9d04fd0d3" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="export_id" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.uriParams.export_id]]></ee:set-variable>
+				<ee:set-variable resource="dwScripts/marketo/v-configuration-export-get-file.dwl" variableName="configurationVar" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-get-marketo-oauth-access-token" doc:id="f7108b34-63e9-4db8-b29b-7221aff06bf4" name="sf-get-marketo-oauth-access-token" target="marketoAccessToken"/>
+		
+		<http:request method="GET" doc:name="Marketo Export Retrieve File Export Activities/Leads" doc:id="b89de829-7969-4781-b82e-169d68214dce" config-ref="HTTP_Request_Configuration_Marketo" path="#[vars.configurationVar.path]">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"export_id" : vars.export_id
+}]]]></http:uri-params>
+			<http:query-params><![CDATA[#[output application/java
+					---
+					{
+						"access_token" : vars.marketoAccessToken.access_token
+					}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Convert Response To JSON" doc:id="4ad5647f-aca3-4c18-b9ce-b80e93819231">
+					<ee:message>
+				<ee:set-payload resource="dwScripts/marketo/p-retrieve-file-export.dwl" />
+					</ee:message>
+				</ee:transform>
+		<logger level="INFO" doc:name="mf-marketo-retrieve-file-export End" doc:id="63bb7853-32cd-41e5-892a-b452c7edc2f1" message="mf-marketo-retrieve-file-export End"/>
+	
+	</sub-flow>
+	<sub-flow name="mf-marketo-retrieve-status-export" doc:id="948be093-72a5-48b0-a6db-2e43c6559436" >
+	<logger level="INFO" doc:name="mf-marketo-retrieve-status-export Begin" doc:id="fc54bcc9-3475-46a6-ac08-7e9323598d57" message="mf-marketo-retrieve-status-export Begin"/>
+		<ee:transform doc:name="Set export_id and configurationVar" doc:id="b9b0bc55-9def-492d-978e-30831f6d1a7a" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="export_id" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.uriParams.export_id]]></ee:set-variable>
+				<ee:set-variable resource="dwScripts/marketo/v-configuration-export-get-status.dwl" variableName="configurationVar" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-get-marketo-oauth-access-token" doc:id="0d827f6c-806c-4ac0-9ec2-e247c60f8279" name="sf-get-marketo-oauth-access-token" target="marketoAccessToken"/>
+		
+		<http:request method="GET" doc:name="Marketo  Retrieve Status Leads/Activities" doc:id="295db727-3022-4840-9409-7a0e37adfffb" config-ref="HTTP_Request_Configuration_Marketo" path="#[vars.configurationVar.path]">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"export_id" : vars.export_id
+}]]]></http:uri-params>
+					<http:query-params><![CDATA[#[output application/java
+					---
+					{
+						"access_token" : vars.marketoAccessToken.access_token
+					}]]]></http:query-params>
+		</http:request>
+		<flow-ref doc:name="sf-marketo-export-response" doc:id="da220e8b-f83d-4471-9e86-a7a98a6703c4" name="sf-marketo-export-response"/>
+		<logger level="INFO" doc:name="mf-marketo-retrieve-status-export End" doc:id="7c9b8e26-7f9a-40a5-b6ab-267bd1c61b29" message="mf-marketo-retrieve-status-export End"/>
+	</sub-flow>
+	<sub-flow name="sf-marketo-export-response" doc:id="2f6830d1-adf8-4684-a795-63e6b7910b8d">
+	
+	<choice doc:name="CHECK IF Success" doc:id="07d7defd-f773-459f-9e38-642685cdc9f2">
+			<when expression="#[!payload.success]">
+				<set-variable value='#[payload.errors.message[0]]' doc:name="Set Error Description" doc:id="47c8fd8c-8a56-4b26-9c11-20d364c2df5a" variableName="errorDescription" />
+				<ee:transform doc:id="979ec312-7250-4c3a-9c8c-c486a5d103c8" doc:name="DW ErrorResponse request">
+					<ee:message>
+						<ee:set-payload resource="dwScripts/errorResponse400.dwl" />
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Convert payload to JSON" doc:id="ccf49746-3cd4-45b0-9f2b-21d18b1886c2">
+			<ee:message>
+				<ee:set-payload resource="dwScripts/marketo/p-export-response.dwl" />
+			</ee:message>
+		</ee:transform>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

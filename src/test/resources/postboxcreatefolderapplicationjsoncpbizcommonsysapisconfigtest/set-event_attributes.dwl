@@ -1,0 +1,30 @@
+{
+  "headers": {
+    "access_token": "0CJhIsw7WFrhsj59Fh7kyBAMKQgr3BFp",
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.25.0",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "postman-token": "4a16b923-e8d1-42c4-905a-d4b41c8ffa47",
+    "host": "localhost:8081",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "58"
+  },
+  "clientCertificate": null,
+  "method": "POST",
+  "scheme": "http",
+  "queryParams": {},
+  "requestUri": "/api/box/create-folder",
+  "queryString": "",
+  "version": "HTTP/1.1",
+  "maskedRequestPath": "/box/create-folder",
+  "listenerPath": "/api/*",
+  "relativePath": "/api/box/create-folder",
+  "localAddress": "/127.0.0.1:8081",
+  "uriParams": {},
+  "rawRequestUri": "/api/box/create-folder",
+  "rawRequestPath": "/api/box/create-folder",
+  "remoteAddress": "/127.0.0.1:59069",
+  "requestPath": "/api/box/create-folder"
+}

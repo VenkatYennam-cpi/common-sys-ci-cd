@@ -1,0 +1,8 @@
+{
+    "errors":[
+    {
+        "transaction_id": "19203861293534",
+        "error_code": "APIKIT-405-MOETHOD-NOT-ALLOWED-ERROR",
+        "error_message": "The request was rejected. Method is not Allowed."
+    }]
+}

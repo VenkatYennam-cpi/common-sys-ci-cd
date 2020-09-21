@@ -1,0 +1,77 @@
+{
+  "consumed_capacity": {
+    "capacity_units": 4,
+    "global_secondary_indexes": {
+      "temp_field": {
+        "capacity_units": 5,
+        "read_capacity_units": 6,
+        "write_capacity_units": 7
+      }
+    },
+    "local_secondary_indexes": {
+      "temp_field": {
+        "capacity_units": 5,
+        "read_capacity_units": 6,
+        "write_capacity_units": 7
+      }
+    },
+    "read_capacity_units": 8,
+    "table": {
+      "capacity_units": 5,
+      "read_capacity_units": 6,
+      "write_capacity_units": 7
+    },
+    "table_name": "Script",
+    "write_capacity_units": 8
+  },
+  "count": 8,
+  "items": [
+    {
+      "temp_field": {
+        "b": "blob",
+        "bool": "boolean",
+        "bs": "[ blob ]",
+        "l": [
+          "AttributeValue"
+        ],
+        "m": {
+          "temp_field": "AttributeValue"
+        },
+        "n": "string",
+        "ns": [
+          "string"
+        ],
+        "null": "boolean",
+        "s": "string",
+        "ss": [
+          "string"
+        ]
+      }
+    }
+  ],
+  "last_evaluated_key": {
+    "temp_field": {
+      "b": "blob",
+      "bool": "boolean",
+      "bs": [
+        "blob"
+      ],
+      "l": [
+        "AttributeValue"
+      ],
+      "m": {
+        "string": "AttributeValue"
+      },
+      "n": "string",
+      "ns": [
+        "string"
+      ],
+      "null": "boolean",
+      "s": "string",
+      "ss": [
+        "string"
+      ]
+    }
+  },
+  "scanned_count": 8
+}

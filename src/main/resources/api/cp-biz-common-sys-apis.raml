@@ -1,0 +1,746 @@
+#%RAML 1.0
+title: cp-biz-common-sys-apis
+version: v1.0
+protocols:
+  - HTTPS
+mediaType: 
+  - application/json
+  
+resourceTypes:
+  postErrorType: !include resourceTypes/PostErrorType.raml
+  getErrorType: !include resourceTypes/GetErrorType.raml
+
+types:
+  dynamoDbScanRequest: !include types/PostScanRequestDataType.raml
+  dynamoDbScanResponse: !include types/PostScanResponseDataType.raml
+  dynamoDbBatchPutItemRequest: !include types/BatchPutItemRequestDatatype.raml
+  
+uses:
+  postImportBulkDataRequest: resources/libraries/PostImportBulkDataRequest.raml
+  postImportBulkDataResponse: resources/libraries/PostImportBulkDataResponse.raml
+  getJobExecutionDetailResponse: resources/libraries/GetJobExecutionDetailResponse.raml
+  getFileDocumentResponse: resources/libraries/GetFileDocumentResponse.raml
+  getSearchResultResponse: resources/libraries/GetSearchResultResponse.raml
+  putDocInfoRequest: resources/libraries/PutDocInfoRequest.raml
+  postImportMarketoRequest: resources/libraries/PostImportMarketoRequest.raml
+  postImportMarketoResponse: resources/libraries/PostImportMarketoResponse.raml
+  postExportLeadMarketoRequest: resources/libraries/PostExportLeadMarketoRequest.raml
+  postExportMarketoResponse: resources/libraries/PostExportMarketoResponse.raml
+  getMarketoStatusResponse: resources/libraries/GetMarketoStatusResponse.raml
+  getMarketoExportJobStatusResponse: resources/libraries/GetMarketoExportJobStatusResponse.raml
+  postMarketoEnqueueResponse: resources/libraries/PostMarketoEnqueueResponse.raml
+  postMarketoExportActivitiesRequest: resources/libraries/PostExportActivitesMarketoRequest.raml
+  getMarketoExportFileContent : resources/libraries/GetMarketoExportFileContent.raml
+  getMarketoFailureResponse: resources/libraries/GetMarketoFailureResponse.raml
+  getMarketoWarningResponse: resources/libraries/GetMarketoWarningResponse.raml
+  errorResponse: resources/libraries/Errors.raml
+  commonLibrary: /libraries/CommonLibrary.raml
+  getRmaHistoryResponseType: resources/libraries/GetRmaHistoryResponseType.raml
+
+
+traits:
+  Params:
+    queryParameters:
+      id:
+        description: Server ID.
+        type: string
+        required: true
+  chargeable:
+    headers:
+      access_token?:
+        type: string
+  uploadFile:
+    headers:      
+      folder_id?:
+        type: string
+  uploadFileVersion:
+    headers:
+      etag?:
+        type: string
+  marketo:
+    headers:
+      region:
+        enum: ["EU","US"]
+        minLength: 1
+        required: true
+      range:
+        required: false
+        description: This header is used for export retrieve file endpoint when we want to retrieve the part of a file
+        type: string
+        example: "bytes=0-9999"
+      
+      
+/box:
+  /search:
+    is: [chargeable]
+    get:
+      description: Searches for items that are available to the user or an entire enterprise
+      queryParameters:
+        query:
+          description: The string to search for. This query is matched against item names, descriptions, text content of files, and various other fields of the different item types
+          type: string
+        type:
+          description: Limits search results to items of this type
+          type: string
+          required: false
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/searchResponse.json
+  /create-folder:
+    is: [chargeable]
+    post:
+      description: Creates a new empty folder within the specified parent folder.
+      body:
+        type: !include types/createFolderRequest.raml
+        example: !include examples/createFolderRequest.json
+      responses:
+        201:
+          body:
+            application/json:
+              example: !include examples/createFolderResponse.json
+                
+  /upload-file:
+    is: [chargeable , uploadFile]
+    post:
+      description: Uploads a file to box
+      body:
+        type: !include types/uploadFile.raml
+        example: !include examples/uploadFileRequest.json
+      responses:
+        201:
+          body:
+            example: !include examples/uploadFileResponse.json
+  /delete-file:
+    /{file_id}:
+      is: [chargeable]
+      delete:
+        description: Deletes a file, either permanently or by moving it to the trash
+        responses:
+          204:
+            body:
+              example: []
+  /retrieve-file:
+    /file:
+      /{file_id}:
+        /content:
+          is: [chargeable]
+          get:
+            description: Retrieves the file Content
+            responses:
+              200:
+                body:
+                  application/json:
+                    example: !include examples/retrieveFileResponse.json
+
+  /retrieve-fileinfo:
+    /{file_id}:
+        is: [chargeable]
+        get:
+          description: Retrieve the information about  file
+          responses:
+            200:
+              body:
+                application/json:
+                  example: !include examples/retrieveFileInfoResponse.json
+  
+  /upload-file-version:
+    /{file_id}:
+      is: [chargeable , uploadFile , uploadFileVersion]
+      post:
+        description: Update a file's content.
+        body:
+          type: !include types/uploadFile.raml
+          example: !include examples/uploadFileRequest.json
+        responses:
+          200:
+            body:
+              example: !include examples/uploadFileResponse.json
+  /folders:
+    /{folder_id}:
+      /items:
+        is: [chargeable]
+        uriParameters:
+          folder_id:
+            description: ID of the file
+            type: number
+            required: true
+        get:
+          description: Retrieves the information about contents in specified folder
+          responses:
+            200:
+              body:
+                application/json:
+                  example: !include examples/retrieveFolderItemsResponse.json
+                
+/v1:
+  /email:
+    post:
+      responses:
+         200:
+           body:
+             application/json:
+              type: string
+              example: |
+                {"Success"}   
+                    
+  /ftp-move:
+    description: This endpoint is used to write the collection of data to the desired location through FTP.
+    post:
+      description: Moves a file from one directory to another.
+      body:   
+          type: !include types/ftp-move-dataType.raml
+          example: !include examples/ftp-move-request.json
+      responses:
+        200:
+          body:
+            application/json:
+              example: success!!!  
+
+  /ftp-read:
+    description: This endpoint is used to write the collection of data to the desired location through FTP.
+    post:
+      description: Writes the data into the file.
+      body:   
+          type: !include types/ftp-read-list-dataType.raml
+          example: !include examples/ftp-read-list-request.json
+      responses:
+        200:
+          body:
+            application/json:
+              example: success!!! 
+     
+  /ftp-list:
+      description: This endpoint provides a list of all records in a given directory
+      post:
+        body:
+          type: !include types/ftp-read-list-dataType.raml
+          example: !include examples/ftp-read-list-request.json
+        responses:
+          200:
+            body:
+              application/json:
+                example: success!!! 
+  /ospc:
+    /{requestid}:
+      /jobexecutiondetails:
+        description: This endpoint used to get job execution details
+        uriParameters:
+         requestid:
+          description: Request Id of upload file
+          type: string
+          required: true
+        get:
+         description: Retrieves the file Content
+         responses:
+           200:
+             body:
+              application/json:
+               type: getJobExecutionDetailResponse.job_execution_response
+               example: !include examples/getJobExecutionDetailResponse.json
+      
+    /importbulkdata:
+      description: This endpoint used to upload the data file to OSPC server
+      post: 
+        body:
+          application/json:
+            type: postImportBulkDataRequest.inboundData_request
+            example: !include examples/postImportBulkDataRequest.json
+        responses:
+          200:
+            body:
+              application/json:
+               type: postImportBulkDataResponse.inboundData_response
+               example: !include examples/postImportBulkDataResponse.json
+    
+    /searchresults:
+      description: This endpoint will returns details from ospc which are Planned Order release.
+      get:
+       queryParameters:
+         q:
+          description: Search the planning data based upon the query text
+          example: {"comments": {"matches" :""}}
+          type: object
+          required: true
+         doc_account:
+          description: Document account
+          example: "scm$/planningDataLoader$/export$"
+          type: string
+          required: false
+         doc_title:
+          description: Document Title
+          example: "ReleaseToExternalSource"
+          type: string
+          required: false
+       responses:
+         200:
+            body:
+              application/json:
+               type: getSearchResultResponse.search_result_response
+               example: !include examples/getSearchResultResponse.json
+               
+    /document:
+      description: This endpoint return data from OSPC in base64 format based upon Id
+      get:
+       description: Retrieves the file Content
+       queryParameters:
+         ids:
+          description: Search the planning data based upon the query text
+          example: "123,234"
+          type: string
+          required: true
+       responses:
+         200:
+            body:
+              application/json:
+               type: getFileDocumentResponse.file_document_response
+               example: !include examples/getFileDocumentResponse.json
+            description: This endpoint return data in base64 format based upon Id
+      put:
+       description: This API is used to update the contentof the document
+       body:
+        application/json:
+          type: putDocInfoRequest.update_doc_request
+          example: !include examples/ospcUpdateDocInfoRequestExample.json
+       responses:
+         204:
+            description: Updated Successfully
+            body:
+              application/json:
+               example: Document Updated Succesfully
+  /marketo:
+     /bulk:
+      /import:
+       /leads:
+         is: [marketo]
+         description: This endpoint used to upload the data file to Marketo
+         type: {
+              postErrorType: {
+                  errors-schema: errorResponse.errors,
+                  errors-example: !include examples/error/errors.json
+                }
+         }
+         post: 
+            queryParameters:
+             list_id:
+              description: List Id
+              example: 123456
+              type: number
+              required: false
+            body:
+              application/json:
+                type: postImportMarketoRequest.import_marketo_request
+                example: !include examples/marketo/postImportMarketoRequest.json
+            responses:
+              200:
+                body:
+                  application/json:
+                   type: postImportMarketoResponse.import_marketo_response
+                   example: !include examples/marketo/postImportMarketoResponse.json
+         /{batch_id}:
+             /job:
+              /status:
+                is: [marketo]
+                description: This endpoint used to get job status
+                uriParameters:
+                 batch_id:
+                  description: Batch Id
+                  type: string
+                  required: true
+                type: {
+                  getErrorType: {
+                      errors-schema: errorResponse.errors,
+                      errors-example: !include examples/error/errors.json
+                    }
+                }
+                get:
+                 description: Retrieves the batch status
+                 responses:
+                   200:
+                     body:
+                      application/json:
+                       type: getMarketoStatusResponse.marketo_status_response
+                       example: !include examples/marketo/getMarketoStatusResponse.json
+             /failures:
+              is: [marketo]
+              type: {
+                getErrorType: {
+                    errors-schema: errorResponse.errors,
+                    errors-example: !include examples/error/errors.json
+                  }
+              }
+              get:
+               description: Retrieves the failures
+               responses:
+                 200:
+                   body:
+                    application/json:
+                     type: getMarketoFailureResponse.marketo_failure_response
+                     example: !include examples/marketo/getMarketoFailureResponse.json
+    
+             /warnings:
+                is: [marketo]
+                type: {
+                  getErrorType: {
+                      errors-schema: errorResponse.errors,
+                      errors-example: !include examples/error/errors.json
+                    }
+                }
+                get:
+                 description: Retrieves the warnings
+                 responses:
+                   200:
+                     body:
+                      application/json:
+                       type: getMarketoWarningResponse.marketo_warning_response
+                       example: !include examples/marketo/getMarketoWarningResponse.json
+      /export:
+        /activities:
+          is: [marketo]
+          description: This endpoint creates export job(activities) for search criteria defined via "filter" parameter.
+          type: {
+                    postErrorType: {
+                        errors-schema: errorResponse.errors,
+                        errors-example: !include examples/error/errors.json
+                      }
+              }
+          post:
+            body:
+              application/json:
+                type: postMarketoExportActivitiesRequest.export_activity_marketo_request
+                example: !include examples/marketo/postExportActivitesMarketoRequest.json
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: postExportMarketoResponse.export_marketo_response
+                    example: !include examples/marketo/postExportMarketoResponse.json
+          /job:
+            /status:
+              is: [marketo]
+              description: This endpoint returns a list of export jobs that were created in the past 7 days
+              type: {
+                    getErrorType: {
+                        errors-schema: errorResponse.errors,
+                        errors-example: !include examples/error/errors.json
+                      }
+                  }
+              get:
+                queryParameters:
+                  status:
+                    description: Comma separated list of statuses to filter on.
+                    type: string
+                    required: true
+                    example: Created,Completed,Queued,Failed,Processing,Cancelled
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        type: getMarketoExportJobStatusResponse.export_job_status_response 
+                        example: !include examples/marketo/getMarketoExportJobStatusResponse.json
+          /{export_id}:
+            /enqueue:
+              is: [marketo]
+              description: This endpoint will place export job in queue, and will start the job when computing resources become available
+              uriParameters:
+                export_id:
+                  description: Export Id
+                  required: true
+                  type: string
+              type: {
+                      postErrorType: {
+                          errors-schema: errorResponse.errors,
+                          errors-example: !include examples/error/errors.json
+                        }
+                }
+              post:
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        type: postMarketoEnqueueResponse.enqueue_export_marketo_response
+                        example: !include examples/marketo/postMarketoEnqueueResponse.json
+            /file:
+              is: [marketo]
+              description: This endpoint is used to retrieve the data once the job is complete 
+              uriParameters:
+                export_id:
+                  description: Export Id
+                  required: true
+                  type: string
+              type: {
+                      getErrorType: {
+                          errors-schema: errorResponse.errors,
+                          errors-example: !include examples/error/errors.json
+                        }
+                }
+              get:
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        type: getMarketoExportFileContent.export_marketo_file_content_response
+                        example: !include examples/marketo/getMarketoExportFileResponse.json
+            /status:
+              is: [marketo]
+              description: This endpoint returns status of an export job. Job status is available for 30 days after Completed or Failed status was reached
+              uriParameters:
+                export_id:
+                  description: Export Id
+                  required: true
+                  type: string
+              type: {
+                      getErrorType: {
+                          errors-schema: errorResponse.errors,
+                          errors-example: !include examples/error/errors.json
+                        }
+                }
+              get:
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        type: getMarketoExportJobStatusResponse.export_job_status_response 
+                        example: !include examples/marketo/getMarketoExportJobStatusResponse.json
+        /leads:
+          is: [marketo]
+          description: This endpoint creates export job(leads) for search criteria defined via "filter" parameter.
+          type: {
+                    postErrorType: {
+                        errors-schema: errorResponse.errors,
+                        errors-example: !include examples/error/errors.json
+                      }
+              }
+          post:
+            body:
+              application/json:
+                type: postExportLeadMarketoRequest.export_lead_marketo_request
+                example: !include examples/marketo/postExportLeadMarketoRequest.json
+            responses:
+              200:
+                body:
+                  application/json:
+                   type: postExportMarketoResponse.export_marketo_response
+                   example: !include examples/marketo/postExportMarketoResponse.json
+
+          /job:
+            /status:
+              is: [marketo]
+              description: This endpoint returns a list of export jobs that were created in the past 7 days
+              type: {
+                  getErrorType: {
+                      errors-schema: errorResponse.errors,
+                      errors-example: !include examples/error/errors.json
+                    }
+                }
+              get:
+                queryParameters:
+                  status:
+                    description: Comma separated list of statuses to filter on.
+                    type: string
+                    required: true
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        type: getMarketoExportJobStatusResponse.export_job_status_response 
+                        example: !include examples/marketo/getMarketoExportJobStatusResponse.json
+
+          /{export_id}:
+            /enqueue:
+              is: [marketo]
+              description: This endpoint used to export the data files from Marketo
+              uriParameters:
+                export_id:
+                  description: Id of export batch job.
+                  type: string
+                  required: true
+              type: {
+                        postErrorType: {
+                            errors-schema: errorResponse.errors,
+                            errors-example: !include examples/error/errors.json
+                          }
+                  }
+              post:
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        type: postMarketoEnqueueResponse.enqueue_export_marketo_response
+                        example: !include examples/marketo/postMarketoEnqueueResponse.json
+            /file:
+              is: [marketo]
+              description: This endpoint returns the file content of an export job. 
+              uriParameters:
+                export_id:
+                  description: Id of export batch job.
+                  type: string
+                  required: true
+              type: {
+                        getErrorType: {
+                            errors-schema: errorResponse.errors,
+                            errors-example: !include examples/error/errors.json
+                          }
+                  }
+              get:
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        type: getMarketoExportFileContent.export_marketo_file_content_response
+                        example: !include examples/marketo/getMarketoExportFileResponse.json
+            /status:
+              is: [marketo]
+              description: This endpoint returns status of an export job. Job status is available for 30 days after Completed or Failed status was reached. 
+              uriParameters:
+                export_id:
+                  description: Id of export batch job.
+                  type: string
+                  required: true
+              type: {
+                        getErrorType: {
+                            errors-schema: errorResponse.errors,
+                            errors-example: !include examples/error/errors.json
+                          }
+                  }
+              get:
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        type: getMarketoExportJobStatusResponse.export_job_status_response 
+                        example: !include examples/marketo/getMarketoExportJobStatusResponse.json
+  /aws:
+    /upload:
+      description: This endpoint is used to uplaod file to the aws s3 bucket.Receives upload file json request payload and returns a json object as partof the json response when file upload is successsful.
+      type:  
+        commonLibrary.postCollection:  
+          data-request-type: commonLibrary.createFileDataTypeRequest
+          data-request-example: !include examples/createFileRequestExample.json
+          response-200-type: commonLibrary.createFileDataTypeResponse
+          response-200-example: !include examples/createFileResponseExample.json
+          error-response: commonLibrary.errorResponse
+    /dynamo-db:
+      /items:
+        description: This endpoint is for creating a new item or replacing an existing item with a new one.
+        type: {
+                        getErrorType: {
+                            errors-schema: errorResponse.errors,
+                            errors-example: !include examples/error/errorDynamoDbExampleResponse400.json
+                          }
+                  }
+        post:
+          body:
+            application/json:
+              type: dynamoDbBatchPutItemRequest
+              example: !include examples/batchPutItemRequestExample.json
+          responses:
+           200:
+             body:
+               application/json:
+                type: string
+                example: |
+                  {"Success"}  
+      /scan:
+        description: This endpoint returns one or more items and item attributes from a table.
+        type: {
+                        getErrorType: {
+                            errors-schema: errorResponse.errors,
+                            errors-example: !include examples/error/errorDynamoDbExampleResponse400.json
+                          }
+                  }
+        post:
+          body:
+            application/json:
+              type: dynamoDbScanRequest
+              example: !include examples/postScanRequestExample.json
+          responses:
+            200:
+              body:
+                application/json:
+                  type: dynamoDbScanResponse
+                  example: !include examples/postScanResponseExample.json
+    /copy:
+      description: This endpoint is used to copy file to the defined aws s3 bucket.Receives a json request payload and returns a json object as partof the json response when file file copy is successsful.
+      type:  
+        commonLibrary.postCollection:  
+          data-request-type: commonLibrary.copyFileDataTypeRequest
+          data-request-example: !include examples/copyFileRequestExample.json
+          response-200-type: commonLibrary.copyFileDataTypeResponse
+          response-200-example: !include examples/copyFileResponseExample.json
+          error-response: commonLibrary.errorResponse
+    /delete:
+      type: 
+        commonLibrary.deleteCollection:
+          typeName: "File"
+          deleterequest-type: commonLibrary.deleteFileDataTypeRequest
+          deleterequest-example: !include examples/deleteFileRequestExample.json
+          error-response: commonLibrary.errorResponse
+    /read:
+      type: 
+        commonLibrary.postCollection:
+          data-request-type: commonLibrary.readFileDataTypeRequest
+          data-request-example: !include examples/readFileRequestExample.json
+          response-200-type: commonLibrary.readFileDataTypeResponse
+          response-200-example: !include examples/readFileResponseExample.json
+          error-response: commonLibrary.errorResponse
+    /list:
+      type: 
+        commonLibrary.postCollection:
+          data-request-type: commonLibrary.listFilesDataTypeRequest
+          data-request-example: !include examples/listFilesRequestExample.json
+          response-200-type: commonLibrary.listFilesDataTypeResponse
+          response-200-example: !include examples/listFilesResponseExample.json
+          error-response: commonLibrary.errorResponse
+    /secure:
+      /read:
+        type: 
+          commonLibrary.postCollection:
+            data-request-type: commonLibrary.readFileDataTypeRequest
+            data-request-example: !include examples/readFileRequestExample.json
+            response-200-type: commonLibrary.readFileDataTypeResponse
+            response-200-example: !include examples/readFileResponseExample.json
+            error-response: commonLibrary.errorResponse
+      /copy:
+        description: This endpoint is used to copy file to the defined aws s3 bucket.Receives a json request payload and returns a json object as partof the json response when file file copy is successsful.
+        type:  
+          commonLibrary.postCollection:  
+            data-request-type: commonLibrary.copyFileDataTypeRequest
+            data-request-example: !include examples/copyFileRequestExample.json
+            response-200-type: commonLibrary.copyFileDataTypeResponse
+            response-200-example: !include examples/copyFileResponseExample.json
+            error-response: commonLibrary.errorResponse
+  /rma:
+    /history:
+      type: {
+                        getErrorType: {
+                            errors-schema: errorResponse.errors,
+                            errors-example: !include examples/error/errorDynamoDbExampleResponse400.json
+                          }
+                  }
+      get:
+        description: Fetches RMA records from RedShift by filtering records based on Created Week, MAC Address, Station Serial Number or EVSE ID
+        queryParameters:
+          created_week:
+            description: Filter records based on the created week
+            type: string
+            required: false
+          mac_address:
+            description: Filter records based on the MAC address
+            type: string
+            required: false
+          station_serial_num:
+            description: Filter records based on the EVSE ID
+            type: string
+            required: false
+          evse_id:
+            description: Filter records based on Serial number
+            type: string
+            required: false
+        responses:
+          200:
+            body:
+              application/json:
+                type: getRmaHistoryResponseType.rma_history_response
+                example: !include examples/getRmaHistoryResponseEx.json

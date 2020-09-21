@@ -1,0 +1,18 @@
+[{
+  "created_week": "2020-08-29",
+  "ticket_number": "1873082",
+  "mac_address": "0024:B100:0003:26D8",
+  "station_serial_num": "184641029617",
+  "evse_id": "1817501",
+  "station_model": "cpf",
+  "station_model_detail": "CPF25",
+  "issue": "Network Connectivity",
+  "sent": "Head",
+  "rma_num": "RA124785",
+  "fso_num": "SO83208",
+  "ticket_type": "RMAForm",
+  "cause_code": "Network::No Signal",
+  "part_num": "99-002002-01-R",
+  "part_serial_num": "184641029617"
+  
+}]

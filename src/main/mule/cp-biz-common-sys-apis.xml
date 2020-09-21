@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<apikit:config name="cp-biz-common-sys-apis-config" api="cp-biz-common-sys-apis.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<flow name="cp-biz-common-sys-apis-main">
+		<http:listener config-ref="cp-biz-common-sys-apis-httpListenerConfig" path="/api/*">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:response>
+			<http:error-response
+				statusCode="#[output application/java --- (if((vars.httpStatus contains &quot; &quot;))(((vars.httpStatus) splitBy  &quot; &quot;)[2] as Number) else (vars.httpStatus as Number)) default 500]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:router config-ref="cp-biz-common-sys-apis-config" />
+		<error-handler ref="Error_Handler" />
+	</flow>
+	<flow name="cp-biz-common-sys-apis-console">
+		<http:listener config-ref="cp-biz-common-sys-apis-httpListenerConfig" path="/console/*">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:body>#[payload]</http:body>
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:console config-ref="cp-biz-common-sys-apis-config" />
+		<error-handler>
+			<on-error-propagate type="APIKIT:NOT_FOUND">
+				<ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">404</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="delete:\box\delete-file\(file_id):cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="DELETE : \box\delete-file\(file_id) Flow Started" doc:id="b059d550-51cd-44ea-a791-1025e46e4d82" message="DELETE : \box\delete-file\(file_id) Flow Started" />
+		<flow-ref doc:name="mf-delete-file" doc:id="a27c72a9-6cd4-431e-ab9e-12dbb883bda2" name="mf-delete-file" />
+		<logger level="INFO" doc:name="DELETE : \box\delete-file\(file_id) Flow Ended" doc:id="11ec9d5c-764a-40eb-b4a5-e9acfe07ff10" message="DELETE : \box\delete-file\(file_id) Flow Ended" />
+	</flow>
+	<flow name="get:\box\retrieve-file\file\(file_id)\content:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="GET : \box\retrieve-file\file\(file_id)\content Flow Started" doc:id="98ed4af1-966a-4c48-a6ba-ef66cbe95634"
+			message="GET : \box\retrieve-file\file\(file_id)\content Flow Started" />
+		<flow-ref doc:name="mf-retrieve-file" doc:id="9ce4488f-8ba0-4b76-a11e-a4cf144ba6ad" name="mf-retrieve-file" />
+		<logger level="INFO" doc:name="GET : \box\retrieve-file\file\(file_id)\content Flow Ended" doc:id="da32e8d2-5999-490c-9c91-8c1abb0aa7f7"
+			message="GET : \box\retrieve-file\file\(file_id)\content Flow Ended" />
+	</flow>
+	<flow name="get:\box\search:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="GET : \box\search Flow Started" doc:id="99433dd7-cc91-4e71-9b03-cc928ec82f69" message="GET : \box\search Flow Started" />
+		<flow-ref doc:name="mf-search" doc:id="72109d91-2f09-4791-b2bd-7073a6216b75" name="mf-search" />
+		<logger level="INFO" doc:name="GET : \box\search Flow Ended" doc:id="0dbb6dd8-d76b-4cd6-9955-d6768a88b165" message="GET : \box\search Flow Ended" />
+	</flow>
+	<flow name="get:\box\retrieve-fileinfo\(file_id):cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="GET : \box\retrieve-fileinfo\(file_id) Flow Started" doc:id="7b983dde-eeb7-4dcb-852a-9212ff409acf" message="GET : \box\retrieve-fileinfo\(file_id) Flow Started" />
+		<flow-ref doc:name="mf-retrieve-file-info" doc:id="06c45ad2-4b63-4e35-9a92-56e65e29e1a7" name="mf-retrieve-file-info" />
+		<logger level="INFO" doc:name="GET : \box\retrieve-fileinfo\(file_id) Flow Ended" doc:id="15745c97-065b-4bba-89fe-18730693bcdc" message="GET : \box\retrieve-fileinfo\(file_id) Flow Ended" />
+	</flow>
+	<flow name="post:\box\create-folder:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="POST : \box\create-folder Flow Started" doc:id="52ca9053-de14-4f4b-a009-a4090bc3c77b" message="POST : \box\create-folder Flow Started" />
+		<flow-ref doc:name="mf-create-folders" doc:id="8cc537b5-84e1-4f3e-a1c5-74c7940da9c6" name="mf-create-folders" />
+		<logger level="INFO" doc:name="POST : \box\create-folder Flow Ended" doc:id="ad9191e8-3971-42bb-bd42-c1f3d627cde5" message="POST : \box\create-folder Flow Ended" />
+	</flow>
+	<flow name="post:\v1\email:cp-biz-common-sys-apis-config">
+		<logger level="INFO" message="POST : \v1\email Flow Started" doc:name="POST : \v1\email Flow Started" />
+		<flow-ref doc:name="mf-email-notification-flow" doc:id="639d4d25-97de-4035-a054-87a7a7f46634" name="mf-email-notification-flow" />
+		<logger level="INFO" doc:name="POST : \v1\email Flow Ended" doc:id="84a21dce-80fc-4b68-af68-a1a69f58a4cf" message="POST : \v1\email Flow Ended" />
+	</flow>
+	<flow name="post:\box\upload-file:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="POST : \box\upload-file Flow Started" doc:id="36feacc1-c397-4c12-82ed-aa52138d9480" message="POST : \box\upload-file Flow Started" />
+		<flow-ref doc:name="mf-upload-file" doc:id="53714eaa-0765-4109-a116-77d8ebdd1b61" name="mf-upload-file" />
+		<logger level="INFO" doc:name="POST : \box\upload-file Flow Ended" doc:id="035033e9-e7a2-442b-a210-520defbbe4a3" message="POST : \box\upload-file Flow Ended" />
+	</flow>
+	<flow name="post:\box\upload-file-version\(file_id):application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="POST : \box\upload-file-version\(file_id) Flow Started" doc:id="e408aeac-bc61-4f8b-b327-f9d017714f13"
+			message="POST : \box\upload-file-version\(file_id) Flow Started" />
+		<flow-ref doc:name="mf-upload-file-version" doc:id="1e30f572-2689-4d5e-a16e-37a1110b967f" name="mf-upload-file-version" />
+		<logger level="INFO" doc:name="POST : \box\upload-file-version\(file_id) Flow Ended" doc:id="0a118332-439e-40e9-bef3-17b6a416cc8d"
+			message="POST : \box\upload-file-version\(file_id) Flow Ended" />
+	</flow>
+	<flow name="post:\v1\ftp-read:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="FTP Read Operation Flow Started" doc:id="e62b3cb5-e59f-444a-a2f9-55a8d17c1d77" message="post:\v1\ftp-read Flow Started" />
+		<ee:transform doc:name="Set ftpConfig" doc:id="612b429a-6684-4ea5-a245-cee903f5c4e8">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/set-var-ftpConfig.dwl" variableName="ftpConfig" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Refer to FTP Read Flow" doc:id="02ea7fc7-5b50-491e-ada0-f3bd57c96eb1" name="mf-ftp-read" />
+		<logger level="INFO" doc:name="FTP Read Operation Flow Ended" doc:id="f0a022ff-53b6-4835-ac09-92c80805a95d" message="post:\v1\ftp-read Flow Ended" />
+	</flow>
+	<flow name="post:\v1\ftp-move:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="FTP Write Operation Flow Started" doc:id="0f5c4104-6546-4e61-9cb2-afe34e64a706" message="post:\v1\ftp-read Flow Started" />
+		<ee:transform doc:name="Set ftpConfig" doc:id="98121321-48fc-4185-b58e-64444a65a597">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/set-var-ftpConfig.dwl" variableName="ftpConfig" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Refer to FTP Move Flow" doc:id="a3cbd6e1-cdc4-43bf-a1e8-e3cc648d5dd8" name="mf-ftp-move" />
+		<logger level="INFO" doc:name="FTP Write Operation Flow Ended" doc:id="5545b8c5-c464-4fc1-b8c4-c4cfc18147a7" message="post:\v1\ftp-read Flow Ended" />
+	</flow>
+	<flow name="post:\v1\ftp-list:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="FTP List Operation Flow Started" doc:id="287ef8ad-b730-496f-8707-f7a92d84642f" message="post:\v1\ftp-list Flow Started" />
+		<ee:transform doc:name="Set ftpConfig" doc:id="076ffbc5-dd02-49af-ba1e-eca68cef7477">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/set-var-ftpConfig.dwl" variableName="ftpConfig" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Refer to FTP List Flow" doc:id="ccea85bd-c98c-43b1-9620-1f2262ea86cb" name="mf-ftp-list" />
+		<logger level="INFO" doc:name="FTP List Operation Flow Ended" doc:id="8c453972-d0eb-4708-bf7d-d9d8a5969aa7" message="post:\v1\ftp-list Flow Ended" />
+	</flow>
+	<flow name="post:\v1\ospc\importbulkdata:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="OSPC importbulkdata Flow Started" doc:id="3f331c95-9f32-4720-aef4-7165048bfd2b" message="post:\v1\ospc\importbulkdata Flow Started" />
+		<flow-ref doc:name="sf-ns-ospc-integration-flow" doc:id="669c4fce-c45b-4e60-934e-56f82897c3bd" name="sf-ns-ospc-integration-flow" />
+		<logger level="INFO" doc:name="OSPC importbulkdata Flow Flow Ended" doc:id="e119c1f6-ba1c-4b7b-a67a-975651d1150f" message="post:\v1\ospc\importbulkdata Flow Ended" />
+	</flow>
+	<flow name="get:\v1\ospc\(requestid)\jobexecutiondetails:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="OSPC jobexecutiondetails Flow Started" doc:id="abb175b4-d558-48e6-a6ee-f864744ae7d6" message="get:\v1\ospc\(requestid)\jobexecutiondetails Flow Started" />
+		<flow-ref doc:name="sf-ns-ospc-jobexecutiondetails-flow" doc:id="8efb3142-fcea-4ad2-aa1d-8d0795eeb7b2" name="sf-ns-ospc-jobexecutiondetails-flow" />
+		<logger level="INFO" doc:name="OSPC jobexecutiondetails Flow Flow Ended" doc:id="305254a9-a0e2-4639-92f8-c8c92866e8d8" message="get:\v1\ospc\(requestid)\jobexecutiondetails Flow Ended" />
+	</flow>
+	<flow name="get:\v1\ospc\searchresults:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="OSPC searchresults Flow Started" doc:id="79aae5c2-3735-4c55-afc7-703700e08a71" message="get:\v1\ospc\searchresults Flow Started" />
+		<flow-ref doc:name="sf-ospc-ns-searchresults-flow" doc:id="554bfdc3-94f4-4603-a718-ee7c2c432b85" name="sf-ospc-ns-searchresults-flow" />
+		<logger level="INFO" doc:name="OSPC searchresults Flow Flow Ended" doc:id="ba22c28e-1412-4944-b93f-2e817173e2c1" message="get:\v1\ospc\searchresults Flow Ended" />
+	</flow>
+	<flow name="get:\v1\ospc\document:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="OSPC documents Flow Started" doc:id="49f2226a-3a80-4d34-98e9-49ed2867debe" message="get:\v1\ospc\documents Flow Started" />
+		<flow-ref doc:name="sf-ospc-ns-documents-flow" doc:id="d62c6b2b-bd4a-4287-9fad-ca4285305150" name="sf-ospc-ns-documents-flow" />
+		<logger level="INFO" doc:name="OSPC documents Flow Flow Ended" doc:id="3a6afdd1-9852-44fc-8b18-ed090fd1f4d1" message="get:\v1\ospc\documents Flow Ended" />
+	</flow>
+	<flow name="put:\v1\ospc\document:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="OSPC documents Flow Started" doc:id="7f3b0746-e53e-40f1-942b-5d6a72ac2ed3" message="get:\v1\ospc\documents Flow Started" />
+		<flow-ref doc:name="sf-ospc-ns-update-document-flow" doc:id="6788252b-bfd6-476b-852b-b5c74b46e9fd" name="sf-ospc-ns-update-document-flow" />
+		<logger level="INFO" doc:name="OSPC documents Flow Flow Ended" doc:id="970316bd-5ff6-4706-b094-999c996fbf59" message="get:\v1\ospc\documents Flow Ended" />
+	</flow>
+	<flow name="get:\box\folders\(folder_id)\items:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="Retrieve Folder Items Flow Started" doc:id="0cf896a9-9f77-47bf-ac3b-5c9a423ed67e" message="get:\box\folders\(folder_id)\items Flow Started" />
+		<flow-ref doc:name="Refer to Retrieve Folder Items" doc:id="891639be-3ba2-4e75-92e2-3afcc6bcad75" name="mf-retrieve-folder-items" />
+		<logger level="INFO" doc:name="Retrieve Folder Items Flow Started" doc:id="7190f267-016c-4a9c-bccc-0c8601aa425e" message="get:\box\folders\(folder_id)\items Flow Ended" />
+	</flow>
+	<flow name="post:\v1\marketo\bulk\import\leads:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\marketo\import Flow Started" doc:id="fb715296-fc6f-46a6-ab9f-5d11cf5220a4" message="post:\v1\marketo\import Flow Started" />
+		<flow-ref doc:name="mf-import-marketo-flow" doc:id="dfe678da-4a1f-40fc-bc9b-fa6eb119fffd" name="mf-import-marketo-flow" />
+		<logger level="INFO" doc:name="post:\v1\marketo\import Flow Ended" doc:id="e09b7f97-dba8-4f25-a47d-ecce96edd1cf" message="post:\v1\marketo\import Flow Ended" />
+	</flow>
+	<flow name="get:\v1\marketo\bulk\import\leads\(batch_id)\job\status:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\marketo\(batch_id)\job\status Flow Started" doc:id="28fc114d-b305-42ba-bc2c-3bff2ee02567" message="get:\v1\marketo\(batch_id)\job\status Flow Started" />
+		<flow-ref doc:name="mf-get-marketo-job-status-flow" doc:id="e7c7d59f-1931-4c96-8c26-c347a50a70f9" name="mf-get-marketo-job-status-flow" />
+		<logger level="INFO" doc:name="get:\v1\marketo\(batch_id)\job\status Flow Ended" doc:id="2e4ed63c-6f1f-4696-b454-9d7463c03c12" message="get:\v1\marketo\(batch_id)\job\status Flow Ended" />
+	</flow>
+	<flow name="get:\v1\marketo\bulk\import\leads\(batch_id)\failures:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\marketo\(batch_id)\failures Flow Started" doc:id="1044c690-0f76-484c-abd9-a88e578b2df7" message="get:\v1\marketo\(batch_id)\failures Flow Started" />
+		<flow-ref doc:name="mf-get-marketo-failures" doc:id="73f52e25-85e8-4a88-9b96-efc3e89f6379" name="mf-get-marketo-failures" />
+		<logger level="INFO" doc:name="get:\v1\marketo\(batch_id)\failures Flow Ended" doc:id="7007a228-73b6-45a7-9a6e-b3cf451caff8" message="get:\v1\marketo\(batch_id)\failures Flow Ended" />
+	</flow>
+	<flow name="get:\v1\marketo\bulk\import\leads\(batch_id)\warnings:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\marketo\(batch_id)\warnings Flow Started" doc:id="47f9b72b-b04a-410e-9475-cd8d9ecb169b" message="get:\v1\marketo\(batch_id)\warnings Flow  Started" />
+		<flow-ref doc:name="mf-get-marketo-warnings" doc:id="f6c49b9e-8e3a-4f01-8886-59ef5f627f41" name="mf-get-marketo-warnings" />
+		<logger level="INFO" doc:name="get:\v1\marketo\(batch_id)\warnings Flow Ended" doc:id="507b2b31-9928-4c2b-8259-d0f569e0cde0" message="get:\v1\marketo\(batch_id)\warnings Flow Ended" />
+	</flow>
+	<flow name="delete:\v1\aws\delete:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="delete:\v1\aws\delete Flow Started" doc:id="e3b78d38-2458-4652-b0fb-7e8f55564163" message="delete:\v1\aws\delete Flow Started" />
+		<ee:transform doc:name="Set configVarAws" doc:id="9308225b-2e83-4356-b820-fb8d15ceb76d">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/v-config-aws.dwl" variableName="configVarAws" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-aws-delete-object" doc:id="e2cbf809-541f-49cd-83e4-234263cc2a14" name="sf-aws-delete-object" />
+		<logger level="INFO" doc:name="delete:\v1\aws\delete Flow Ended" doc:id="da3ef898-ff25-43e1-a2e3-742e18766fa8" message="delete:\v1\aws\delete Flow Ended" />
+	</flow>
+	<flow name="post:\v1\aws\copy:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\aws\copy Flow Started" doc:id="4a70128c-5d20-48c5-abdc-7454e8d6cd1c" message="post:\v1\aws\copy Flow Started" />
+		<ee:transform doc:name="Set configVarAws" doc:id="f98ea16b-0dc0-43ca-9d4d-6dcc260ffd4d">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/v-config-aws.dwl" variableName="configVarAws" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-aws-copy-object" doc:id="9878f0eb-bf66-4ee5-95c5-2dccfe17d187" name="sf-aws-copy-object" />
+		<logger level="INFO" doc:name="post:\v1\aws\copy Flow Ended" doc:id="b2ad13bf-dd1a-4060-bfa4-8c46658d13cf" message="post:\v1\aws\copy Flow Ended" />
+	</flow>
+	<flow name="post:\v1\aws\list:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\aws\list Flow Started" doc:id="f2710608-15f5-459f-b6c7-2d79db993a6d" message="post:\v1\aws\list Flow Started" />
+		<ee:transform doc:name="Set configVarAws" doc:id="ddf72620-713f-43d7-91cc-10d59784c465">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/v-config-aws.dwl" variableName="configVarAws" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-aws-list-object" doc:id="e620cf7c-c4d2-46e1-8455-d1a5534815d8" name="sf-aws-list-object" />
+		<logger level="INFO" doc:name="post:\v1\aws\list Flow Ended" doc:id="231a9cce-e432-4702-83e3-f262567a08e6" message="post:\v1\aws\list Flow Ended" />
+	</flow>
+	<flow name="post:\v1\aws\read:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\aws\read Flow Started" doc:id="30469709-bd14-4996-8030-61dd4d0584a0" message="post:\v1\aws\read Flow Started" />
+		<ee:transform doc:name="Set configVarAws" doc:id="8fe398c5-915a-433f-aa1a-cc38bebff79b">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/v-config-aws.dwl" variableName="configVarAws" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-aws-read-object" doc:id="65245952-5bdc-432a-9042-1047ff50664f" name="sf-aws-read-object" />
+		<logger level="INFO" doc:name="post:\v1\aws\read Flow Ended" doc:id="3d47fc50-d6cc-437e-b3e4-1aa6439d435c" message="post:\v1\aws\read Flow Ended" />
+	</flow>
+	<flow name="post:\v1\aws\upload:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\aws\upload Flow Started" doc:id="0aea360d-b4e4-4ee3-825f-1051244cfded" message="post:\v1\aws\upload Flow Started" />
+		<ee:transform doc:name="Set configVarAws and Payload" doc:id="d9fd4eac-51e7-4ee0-9d57-033be4b9153f">
+			<ee:message>
+				<ee:set-payload resource="dwScripts/aws-s3-upload-request.dwl" />
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/v-config-aws.dwl" variableName="configVarAws" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-aws-upload-object" doc:id="0e4cb719-0f68-478b-88c1-0729ffb5d458" name="sf-aws-upload-object" />
+		<logger level="INFO" doc:name="post:\v1\aws\upload Flow Ended" doc:id="6e620c7f-11b6-4b89-b8a3-8807aec37ca7" message="post:\v1\aws\upload Flow Ended" />
+	</flow>
+	<flow name="post:\v1\aws\dynamo-db\items:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="put:\v1\aws\dynamo-db\batch-put-item Flow Started" doc:id="898eeb45-720d-4719-8830-64fdfa4f65a6" message="put:\v1\aws\dynamo-db\batch-put-item Flow Started" />
+		<ee:transform doc:name="Set configVarAws, tableName and Payload" doc:id="ff8cadd5-0640-44da-b34b-6ca22e3518ce">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload.items]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/v-dynamo-db-config.dwl" variableName="configVarAws" />
+				<ee:set-variable variableName="tableName"><![CDATA[%dw 2.0
+output application/json
+---
+payload.table_name]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mf-dynamo-db-batch-put-item" doc:id="1c2b0ebc-590d-4514-aa5b-fd42eee14d9f" name="mf-dynamo-db-batch-put-item" />
+		<logger level="INFO" doc:name="put:\v1\aws\dynamo-db\batch-put-item Flow Ended" doc:id="b7a707ce-77b5-408c-a14b-bbb64233c6b2" message="put:\v1\aws\dynamo-db\batch-put-item Flow Ended" />
+	</flow>
+	<flow name="post:\v1\aws\dynamo-db\scan:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\aws\dynamo-db\scan Flow Started" doc:id="204a5204-6136-498c-8c2a-d65f93dbcc56" message="post:\v1\aws\dynamo-db\scan Flow Started" />
+		<flow-ref doc:name="Ref mf-dynamo-db-scan" doc:id="2279be6a-6bb7-478a-9a2d-7a25e436ba6f" name="mf-dynamo-db-scan" />
+		<logger level="INFO" doc:name="post:\v1\aws\dynamo-db\scan Flow Ended" doc:id="bea988e1-6000-4b45-af0d-e7c728a13667" message="post:\v1\aws\dynamo-db\scan Flow Ended" />
+	</flow>
+	<flow name="get:\v1\marketo\bulk\export\leads\(export_id)\file:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\leads\(export_id)\file Flow Started" doc:id="9f4a3011-ad7d-475e-9d9d-fae0dde5dd18"
+			message="get:\v1\marketo\bulk\export\leads\(export_id)\file Flow Started" />
+		<flow-ref doc:name="mf-marketo-retrieve-file-export-leads" doc:id="c2772f98-b608-44a0-a790-022ffcc6629d" name="mf-marketo-retrieve-file-export" />
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\leads\(export_id)\file Flow Ended" doc:id="5cb4b83d-a1d9-4436-b397-3eb0de28aaf5"
+			message="get:\v1\marketo\bulk\export\leads\(export_id)\file Flow Ended" />
+	</flow>
+	<flow name="get:\v1\marketo\bulk\export\activities\(export_id)\file:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\activities\(export_id)\file Flow Started" doc:id="513af527-81e4-416f-a616-380419d91d20"
+			message="get:\v1\marketo\bulk\export\activities\(export_id)\file Flow Started" />
+		<flow-ref doc:name="mf-marketo-retrieve-file-export-activities" doc:id="31a7172d-b7a1-4103-81ac-76cfe3de120e" name="mf-marketo-retrieve-file-export" />
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\activities\(export_id)\file Flow Ended" doc:id="472daa6d-0e3a-4177-a22d-16ee810afc8f"
+			message="get:\v1\marketo\bulk\export\activities\(export_id)\file Flow Ended" />
+	</flow>
+	<flow name="get:\v1\marketo\bulk\export\activities\(export_id)\status:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\activities\(export_id)\status Flow started" doc:id="059cb3e4-ee7d-4d92-94c3-9bc0510ea8ce"
+			message="get:\v1\marketo\bulk\export\activities\(export_id)\status Flow started" />
+		<flow-ref doc:name="mf-marketo-retrieve-status-export-activities" doc:id="0682bb68-c43f-43bc-9454-8e00f3096037" name="mf-marketo-retrieve-status-export" />
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\activities\(export_id)\status Flow Ended" doc:id="74ce5f30-05c5-41f4-9e54-3a6ef39903d2"
+			message="get:\v1\marketo\bulk\export\activities\(export_id)\status Flow Ended" />
+	</flow>
+	<flow name="get:\v1\marketo\bulk\export\activities\job\status:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\activities\job\status Flow Started" doc:id="bcc8ad30-87d9-4a5e-a121-d4084630c4e6"
+			message="get:\v1\marketo\bulk\export\activities\job\status Flow Started" />
+		<flow-ref doc:name="mf-marketo-retrieve-export-activities-job-status" doc:id="efb97340-c780-42b4-b26f-024a8ecc3cd8" name="mf-marketo-retrieve-export-job-status" />
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\activities\job\status Flow Ended" doc:id="16763ee8-0f2d-4366-b584-6cebfedf89c9"
+			message="get:\v1\marketo\bulk\export\activities\job\status Flow Ended" />
+	</flow>
+	<flow name="get:\v1\marketo\bulk\export\leads\(export_id)\status:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\leads\(export_id)\status Flow started" doc:id="4de32f63-eb1e-4a9f-a97e-133f4aad53b8"
+			message="get:\v1\marketo\bulk\export\leads\(export_id)\status Flow started" />
+		<flow-ref doc:name="mf-marketo-retrieve-status-export-leads" doc:id="45b0eeeb-3d53-45b5-835c-748277f43664" name="mf-marketo-retrieve-status-export" />
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\leads\(export_id)\status Flow Ended" doc:id="ae023c3f-2293-4bb7-8a3a-a73224f3d96c"
+			message="get:\v1\marketo\bulk\export\leads\(export_id)\status Flow Ended" />
+	</flow>
+	<flow name="get:\v1\marketo\bulk\export\leads\job\status:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\leads\job\status Flow Started" doc:id="8de96cd9-b86f-430b-b1b8-1c912731909a"
+			message="get:\v1\marketo\bulk\export\leads\job\status Flow Started" />
+		<flow-ref doc:name="mf-marketo-retrieve-status-export-leads" doc:id="65baa7ea-c8a9-419e-b839-99cf613e3903" name="mf-marketo-retrieve-export-job-status" />
+		<logger level="INFO" doc:name="get:\v1\marketo\bulk\export\leads\job\status Flow Ended" doc:id="19cef530-e249-455a-a68a-003db761ba64"
+			message="get:\v1\marketo\bulk\export\leads\job\status Flow Ended" />
+	</flow>
+	<flow name="post:\v1\marketo\bulk\export\activities:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\marketo\bulk\export\activities Flow Started" doc:id="f0b11065-2420-4ec2-a392-869635798303"
+			message="post:\v1\marketo\bulk\export\activities Flow Started" />
+		<flow-ref doc:name="mf-marketo-create-export-activities" doc:id="a7107bf0-a69a-4ded-afa4-a1d4ca669ee0" name="mf-marketo-export-create" />
+		<logger level="INFO" doc:name="post:\v1\marketo\bulk\export\activities Flow Ended" doc:id="ee83b236-fdce-4153-8e59-5bced7617e68" message="post:\v1\marketo\bulk\export\activities Flow Ended" />
+	</flow>
+	<flow name="post:\v1\marketo\bulk\export\activities\(export_id)\enqueue:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\marketo\bulk\export\activities\(export_id)\enqueue Flow Started" doc:id="fc506936-89ed-43a3-a06f-1bb9c81489ba"
+			message="post:\v1\marketo\bulk\export\activities\(export_id)\enqueue Flow Started" />
+		<flow-ref doc:name="mf-marketo-create-enqueue-export-activities" doc:id="72ca240e-d968-43d8-95a8-a1300282fca1" name="mf-marketo-create-enqueue-export" />
+		<logger level="INFO" doc:name="post:\v1\marketo\bulk\export\activities\(export_id)\enqueue Flow Ended" doc:id="b0a9e160-dd61-42dc-a056-2e8f402f06f7"
+			message="post:\v1\marketo\bulk\export\activities\(export_id)\enqueue Flow Ended" />
+	</flow>
+	<flow name="post:\v1\marketo\bulk\export\leads\(export_id)\enqueue:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\marketo\bulk\export\leads\(export_id)\enqueue Flow Started" doc:id="0706fb57-b56c-4902-b940-9d7f5941fc3f"
+			message="post:\v1\marketo\bulk\export\leads\(export_id)\enqueue Flow Started" />
+		<flow-ref doc:name="mf-marketo-create-enqueue-export-leads" doc:id="05a25a2d-fac4-4066-bb3d-6b998dcf93d8" name="mf-marketo-create-enqueue-export" />
+		<logger level="INFO" doc:name="post:\v1\marketo\bulk\export\leads\(export_id)\enqueue Flow Ended" doc:id="9e88ab94-8e5c-45ab-acd1-3bc7e5d49a93"
+			message="post:\v1\marketo\bulk\export\leads\(export_id)\enqueue Flow Ended" />
+	</flow>
+	<flow name="post:\v1\marketo\bulk\export\leads:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\marketo\bulk\export\leads Flow Started" doc:id="1a4b2764-2f1d-41c8-8bf4-015c3086149b" message="post:\v1\marketo\bulk\export\leads Flow Started" />
+		<flow-ref doc:name="mf-marketo-create-export-leads" doc:id="b3993a29-c936-49ac-96be-55d6e739fbdb" name="mf-marketo-export-create" />
+		<logger level="INFO" doc:name="post:\v1\marketo\bulk\export\leads Flow Ended" doc:id="a6634b10-7111-4907-8910-b54965bbf523" message="post:\v1\marketo\bulk\export\leads Flow Ended" />
+	</flow>
+	<flow name="post:\v1\aws\secure\read:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\aws\secure\read Flow Started" doc:id="b8d9fbb8-2d00-44b4-96d9-22a6fc2af7a7" message="post:\v1\aws\secure\read Flow Started" />
+		<ee:transform doc:name="Set configVarAws" doc:id="6d95081a-8bae-4b9b-8ef9-c6e5c366f056">
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/v-secure-config-aws.dwl" variableName="configVarAws" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-aws-secure-read-object" doc:id="89fefd93-8224-4873-a182-69fdb28f5c1a" name="sf-aws-secure-read-object" />
+		<logger level="INFO" doc:name="post:\v1\aws\secure\read Flow Ended" doc:id="eacea5bb-c6aa-4580-9321-58bcfb3ea4ec" message="post:\v1\aws\secure\read Flow Ended" />
+	</flow>
+	<flow name="get:\v1\rma\history:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="get:\v1\rma\history Flow Started" doc:id="a6b31287-91dd-48d9-a04a-012d91215298" message="get:\v1\rma\history Flow Started" />
+		<flow-ref doc:name="mf-rma-history-implementation" doc:id="c4b4760f-5f62-45e8-bbb8-4d36a5ea6d6c" name="mf-rma-history-implementation" />
+		<logger level="INFO" doc:name="get:\v1\rma\history Flow Ended" doc:id="687c03a5-412d-4709-89fe-e7e383bd845d" message="get:\v1\rma\history Flow Ended" />
+	</flow>
+	<flow name="post:\v1\aws\secure\copy:application\json:cp-biz-common-sys-apis-config">
+		<logger level="INFO" doc:name="post:\v1\aws\secure\copy Flow Started" doc:id="91d29f69-932c-4276-a20e-a124d5c0551d" message="post:\v1\aws\secure\copy Flow Started" />
+		<ee:transform doc:name="Set configVarAws" doc:id="5124c787-81b7-4ce0-895d-e739dc4d15ac">
+			<ee:variables>
+				<ee:set-variable resource="dwScripts/v-config-aws.dwl" variableName="configVarAws" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sf-aws-secure-copy-object" doc:id="0f905df5-da23-4081-b061-e25c4467edd2" name="sf-aws-secure-copy-object" />
+		<logger level="INFO" doc:name="post:\v1\aws\secure\copy Flow Ended" doc:id="210beeb9-1059-402b-9444-6d6f353f8750" message="post:\v1\aws\secure\copy Flow Ended" />
+	</flow>
+</mule>

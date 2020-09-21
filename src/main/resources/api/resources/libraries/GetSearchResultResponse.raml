@@ -1,0 +1,48 @@
+#%RAML 1.0 Library
+
+types:           
+  search_result_response: 
+    description: Outbound Search Result data response schema
+    type: array
+    items:
+      properties:
+       id:
+        type: string
+        required: false
+        description: Uploaded data request Id
+       doc_title:
+        type: string
+        required: false
+        description: Document Title.
+       doc_type:
+        type: string
+        required: false
+        description: Type of Document
+       doc_account:
+        type: string
+        required: false
+        description: Document Account details
+       doc_name:
+        type: string
+        required: false
+        description: Document Name
+       format:
+        type: string
+        required: false
+        description: Document fomat type
+       original_name:
+        type: string
+        required: false
+        description: Document original name
+       extension:
+        type: string
+        required: false
+        description: File Extension
+       create_date:
+        type: string
+        required: false
+        description: Creation Date
+       comments:
+        type: string
+        required: false
+        description: Comments

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 75%;
+}
+
+table tr:nth-child(odd) td{
+  background-color: #ECF7FD;
+  color: black;
+}
+table tr:nth-child(even) td{
+  background-color: #FFFFFF;
+  color: black;
+}
+table th { 
+    color: #fff; background-color: #7a9caf; padding-left: 3px;
+}
+
+table td{
+  text-align: left;
+  padding-left: 5px;
+  width: 100%
+}
+</style>
+</head>
+<body>
+<p>Hello,</p>
+<p>You are receiving this alert because:<br></p>
+<p>The application <b>#[p('app.name')]</b> in <b>#[p('env.name')]</b> has a new error notification<br></p>
+
+<table>
+<br><br>
+  <tr>
+    <td><b>Error Message:</b></td>
+	<td>#[payload.errors[0].errorMessage]</td>
+  </tr>
+  <tr>
+    <td><b>Error Description:</b></td>
+	<td>#[payload.errors[0].errorMessage]</td>
+  </tr>
+  <tr>
+    <td><b>Error Cause:</b></td>
+	<td>#[payload.errors[0].errorCode]</td>
+  </tr>
+ <tr>
+    <td><b>Timestamp:</b></td>
+	<td>#[now()]</td>
+  </tr>
+ 
+</table>
+
+
+<br>
+-----------------------------------------------------------
+<br>
+This is an auto generated e-mail, please do not reply to this e-mail.
+<br>
+<br>
+</body>
+</html>

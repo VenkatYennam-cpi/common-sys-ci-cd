@@ -1,0 +1,14 @@
+#%RAML 1.0 Library
+types:           
+  export_marketo_file_content_response: 
+      type: object
+      description: Export Marketo File Content response schema
+      properties:
+       export_id:
+        type: string
+        required: false
+        description: Export Id
+       content_data:
+        type: string
+        required: false
+        description: Encrypted Content Data

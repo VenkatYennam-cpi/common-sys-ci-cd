@@ -1,0 +1,20 @@
+#%RAML 1.0 Library
+
+
+types:           
+  inboundData_response: 
+      type: object
+      description: Inbound data response schema
+      properties:
+       request_id:
+        type: string
+        required: false
+        description: Uploaded data request Id
+       request_status:
+        type: string | nil
+        required: false
+        description: The current status of the Enterprise Scheduling Service job.
+       status_code:
+        type: string | nil
+        required: false
+        description: The code representing the current status of the Enterprise Scheduling Service job.

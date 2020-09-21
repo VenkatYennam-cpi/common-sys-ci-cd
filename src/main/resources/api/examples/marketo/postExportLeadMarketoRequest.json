@@ -1,0 +1,17 @@
+{
+   "fields": [
+      "firstName",
+      "lastName"
+   ],
+   "format": "CSV",
+   "column_header_names": {
+      "firstName": "First Name",
+      "lastName": "Last Name"
+   },
+   "filter": {
+      "created_at": {
+         "start_at": "2017-01-01T00:00:00Z",
+         "end_at": "2017-01-31T00:00:00Z"
+      }
+   }
+}

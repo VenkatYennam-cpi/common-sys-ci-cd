@@ -1,0 +1,26 @@
+[
+  {
+    "owner": {
+      "display_name": "",
+      "id": "1e0bf854fbe9fa624ae94e4d4b5859943de9a6c521d28f26bb9835b6a67cce16"
+    },
+    "folder_name": "sample281",
+    "storage_class": "STANDARD",
+    "size": 109561,
+    "etag": "fb3660deef20a89e822a7046da040d04",
+    "last_modified": "2020-08-03T21:59:11",
+    "file_name": "data.csv"
+  },
+  {
+    "owner": {
+      "display_name": "",
+      "id": "1e0bf854fbe9fa624ae94e4d4b5859943de9a6c521d28f26bb9835b6a67cce16"
+    },
+    "folder_name": "sample281",
+    "storage_class": "STANDARD",
+    "size": 41,
+    "etag": "d1ec62cada18a5548603af0366f6704a",
+    "last_modified": "2020-08-04T19:36:19",
+    "file_name": "data.txt"
+  }
+]
